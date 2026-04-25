@@ -11,8 +11,6 @@
 
     <artifactId>backend-application</artifactId>
 
-    <packaging>pom</packaging>
-
     <dependencies>
         <dependency>
             <groupId>com.myfootballapp</groupId>

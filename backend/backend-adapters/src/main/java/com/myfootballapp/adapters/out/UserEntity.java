@@ -2,23 +2,24 @@ package com.myfootballapp.adapters.out;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="users")
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class UserEntity {
 
     @Id
     @GeneratedValue
-    public Long id;
+    private Long id;
 
     @Column
-    public String email;
+    private String email;
 
     @Column
-    public String password;
-
+    private String password;
 
 }
