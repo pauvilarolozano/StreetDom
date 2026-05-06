@@ -14,11 +14,6 @@
     <dependencies>
         <dependency>
             <groupId>com.myfootballapp</groupId>
-            <artifactId>backend-domain</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.myfootballapp</groupId>
             <artifactId>backend-ports</artifactId>
             <version>${project.version}</version>
         </dependency>

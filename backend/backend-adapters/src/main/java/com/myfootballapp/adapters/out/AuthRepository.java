@@ -1,16 +1,17 @@
 package com.myfootballapp.adapters.out;
 
+import com.myfootballapp.adapters.out.Entity.UserEntity;
 import com.myfootballapp.adapters.out.mapper.UserEntityMapper;
 import com.myfootballapp.domain.model.User;
-import com.myfootballapp.ports.out.UserRepositoryPort;
+import com.myfootballapp.ports.out.AuthRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepository implements UserRepositoryPort {
+public class AuthRepository implements AuthRepositoryPort {
 
-    private final JpaUserRepository jpa;
+    private final JpaAuthRepository jpa;
 
     public User save(User user) {
         UserEntity userToSave = UserEntityMapper.toEntity(user);

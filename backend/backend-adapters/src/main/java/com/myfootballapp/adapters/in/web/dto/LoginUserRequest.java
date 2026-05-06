@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class UserRequest {
-    String email;
+public class LoginUserRequest {
+    String username;
     String password;
 }
