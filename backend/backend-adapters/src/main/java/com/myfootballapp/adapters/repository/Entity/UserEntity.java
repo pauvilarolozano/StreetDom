@@ -1,4 +1,4 @@
-package com.myfootballapp.adapters.out.Entity;
+package com.myfootballapp.adapters.repository.Entity;
 
 import com.myfootballapp.domain.model.Role;
 import jakarta.persistence.*;

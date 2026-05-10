@@ -1,5 +1,5 @@
 import AppRouter from './routes/AppRouter'
-import { AuthProvider } from './auth/AuthProvider'
+import { AuthProvider } from './auth/context/AuthProvider'
 
 const App = () => {
   return (
@@ -10,3 +10,4 @@ const App = () => {
 }
 
 export default App
+ 

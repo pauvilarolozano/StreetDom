@@ -1,7 +1,7 @@
-package com.myfootballapp.adapters.out;
+package com.myfootballapp.adapters.repository;
 
-import com.myfootballapp.adapters.out.Entity.UserEntity;
-import com.myfootballapp.adapters.out.mapper.UserEntityMapper;
+import com.myfootballapp.adapters.repository.Entity.UserEntity;
+import com.myfootballapp.adapters.repository.mapper.UserEntityMapper;
 import com.myfootballapp.domain.model.User;
 import com.myfootballapp.ports.out.AuthRepositoryPort;
 import lombok.RequiredArgsConstructor;

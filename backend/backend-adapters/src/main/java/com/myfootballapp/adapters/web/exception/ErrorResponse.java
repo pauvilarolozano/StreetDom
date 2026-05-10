@@ -1,4 +1,4 @@
-package com.myfootballapp.adapters.in.web.exception;
+package com.myfootballapp.adapters.web.exception;
 
 
 import lombok.AllArgsConstructor;

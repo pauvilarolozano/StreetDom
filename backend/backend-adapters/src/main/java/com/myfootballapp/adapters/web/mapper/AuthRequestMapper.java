@@ -1,7 +1,7 @@
-package com.myfootballapp.adapters.in.web.mapper;
+package com.myfootballapp.adapters.web.mapper;
 
-import com.myfootballapp.adapters.in.web.dto.LoginUserRequest;
-import com.myfootballapp.adapters.in.web.dto.RegisterUserRequest;
+import com.myfootballapp.adapters.web.dto.LoginUserRequest;
+import com.myfootballapp.adapters.web.dto.RegisterUserRequest;
 import com.myfootballapp.ports.in.command.LoginUserCommand;
 import com.myfootballapp.ports.in.command.RegisterUserCommand;
 

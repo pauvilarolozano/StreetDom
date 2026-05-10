@@ -1,6 +1,6 @@
-package com.myfootballapp.adapters.out.mapper;
+package com.myfootballapp.adapters.repository.mapper;
 
-import com.myfootballapp.adapters.out.Entity.UserEntity;
+import com.myfootballapp.adapters.repository.Entity.UserEntity;
 import com.myfootballapp.domain.model.User;
 
 public class UserEntityMapper {

@@ -1,4 +1,4 @@
-package com.myfootballapp.adapters.in.web.dto;
+package com.myfootballapp.adapters.web.dto;
 
 import lombok.Builder;
 import lombok.Value;

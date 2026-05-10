@@ -1,30 +1,31 @@
+import { useNavigate } from "react-router-dom"
+import AuthLayout from "../../auth/components/AuthLayout";
+import Form from "../../auth/components/Form";
+import InputField from "../../auth/components/InputField";
+import Button from "../../auth/components/Button";
+
 const Login = () => {
-  
+
+  const navigate = useNavigate();
+
+  const handleCreateAccount = () => {
+    navigate("/register");
+  }
+
   return (
-    <>
-      <div className="bg-gradient-to-br from-green-500 via-green-200 to-green-500 h-screen flex items-center justify-center"> 
-        <form className="bg-white flex flex-col items-center gap-5 rounded-lg p-12 shadow-lg">
-          <h1 className="text-3xl font-extrabold text-center text-green-500 ">Log In</h1>
+    <AuthLayout>
+      <Form title="Log In">
+        <InputField label="Username" type="text" placeholder="Enter your username" />
+        <InputField label="Password" type="password" placeholder="Enter your password" />
 
-            <div className="flex flex-col gap-2">
-              <label className="block text-left text-sm text-gray-700 font-bold">Username</label>
-              <input className="border p-2 rounded w-full" type="text" placeholder='Enter your username'  />
-            </div>
+        <Button name="Log In" onClick={() => {}} />
 
-            <div className="flex flex-col gap-2">
-              <label className="block text-left text-sm text-gray-700 font-bold">Password</label>
-              <input className="border p-2 rounded w-full" type="password" placeholder='Enter your password' />
-            </div>
-            <button className="bg-blue-500 text-white p-2 rounded-lg w-full" type='submit'>Log In</button>
-
-            <div className="w-full">
-              <p className="text-sm text-gray-600"> Don't have an account? </p>
-              <button className="bg-blue-500 text-white p-2 rounded-lg w-full" type='submit'>Create Account</button>
-            </div>
-        </form>
-      </div>
-
-    </>
+        <div className="w-full">
+          <p className="text-sm text-gray-600"> Don't have an account? </p>
+          <Button name="Create Account" onClick={handleCreateAccount} />
+        </div>
+      </Form>
+    </AuthLayout>
   )
 }
 
