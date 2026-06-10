@@ -1,9 +1,9 @@
 package com.myfootballapp.ports.in.useCase;
 
 
-import com.myfootballapp.ports.in.command.LoginUserCommand;
-import com.myfootballapp.ports.in.command.RegisterUserCommand;
-import com.myfootballapp.ports.in.result.AuthResult;
+import com.myfootballapp.ports.in.dto.LoginUserCommand;
+import com.myfootballapp.ports.in.dto.RegisterUserCommand;
+import com.myfootballapp.ports.in.dto.AuthResult;
 
 public interface AuthUseCase {
     AuthResult register(RegisterUserCommand userCommand);

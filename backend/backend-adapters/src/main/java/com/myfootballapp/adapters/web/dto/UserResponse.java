@@ -1,4 +1,4 @@
-package com.myfootballapp.ports.in.result;
+package com.myfootballapp.adapters.web.dto;
 
 import lombok.Builder;
 import lombok.Value;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Value
 @Builder
-public class AuthResult {
+public class UserResponse {
     Long id;
     String username;
     String firstName;

@@ -1,4 +1,4 @@
-package com.myfootballapp.ports.in.command;
+package com.myfootballapp.ports.in.dto;
 
 import lombok.Builder;
 import lombok.Value;

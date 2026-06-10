@@ -6,6 +6,6 @@ public interface TokenServicePort {
 
     String generateAccesToken(User user);
     String generateRefreshToken(User user);
-    String extractEmail(String token);
+    String extractUsername(String token);
     boolean isValid(String token);
 }

@@ -1,11 +1,12 @@
 package com.myfootballapp.adapters.web.controller;
 
+import com.myfootballapp.adapters.web.dto.AuthResponse;
 import com.myfootballapp.adapters.web.dto.LoginUserRequest;
 import com.myfootballapp.adapters.web.dto.RegisterUserRequest;
-import com.myfootballapp.adapters.web.mapper.AuthRequestMapper;
-import com.myfootballapp.ports.in.command.LoginUserCommand;
-import com.myfootballapp.ports.in.command.RegisterUserCommand;
-import com.myfootballapp.ports.in.result.AuthResult;
+import com.myfootballapp.adapters.web.mapper.AuthWebMapper;
+import com.myfootballapp.ports.in.dto.LoginUserCommand;
+import com.myfootballapp.ports.in.dto.RegisterUserCommand;
+import com.myfootballapp.ports.in.dto.AuthResult;
 import com.myfootballapp.ports.in.useCase.AuthUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,26 +21,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthUseCase authApplication;
-
-
-    @GetMapping("/login")
-    public ResponseEntity<AuthResult> login(@RequestBody LoginUserRequest request) {
-
-        LoginUserCommand command = AuthRequestMapper.toCommand(request);
-
-        return null;
-    }
+    private final AuthWebMapper mapper;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResult> register(@RequestBody RegisterUserRequest request) {
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterUserRequest request) {
 
-        RegisterUserCommand command = AuthRequestMapper.toCommand(request);
-        AuthResult response = authApplication.register(command);
+        RegisterUserCommand command = mapper.toCommand(request);
+        AuthResult result = authApplication.register(command);
+
+        AuthResponse response = AuthResponse.builder()
+                .user(mapper.toResponse(result.getUser()))
+                .accesToken(result.getAccessToken())
+                .refreshToken(result.getRefreshToken()).build();
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginUserRequest request) {
+
+        LoginUserCommand command = mapper.toCommand(request);
+
+        return null;
+    }
 
 }
