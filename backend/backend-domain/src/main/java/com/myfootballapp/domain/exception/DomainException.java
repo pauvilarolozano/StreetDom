@@ -1,16 +1,8 @@
 package com.myfootballapp.domain.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public abstract class DomainException extends RuntimeException{
 
-@Getter
-@AllArgsConstructor
-public class DomainException extends RuntimeException{
-
-    private final String code;
-
-    public DomainException(String message, String code) {
+    public DomainException(String message) {
         super(message);
-        this.code = code;
     }
 }

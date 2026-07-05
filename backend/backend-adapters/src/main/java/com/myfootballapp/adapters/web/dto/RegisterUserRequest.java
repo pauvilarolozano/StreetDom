@@ -1,14 +1,14 @@
 package com.myfootballapp.adapters.web.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
-import lombok.Value;
 
-@Value
 @Builder
-public class RegisterUserRequest {
-    String username;
-    String password;
-    String firstName;
-    String lastName;
-    String email;
-}
+public record RegisterUserRequest (
+        @NotBlank String username,
+        @NotBlank String password,
+        @NotBlank String firstName,
+        @NotBlank String lastName,
+        @NotBlank @Email String email
+) {}

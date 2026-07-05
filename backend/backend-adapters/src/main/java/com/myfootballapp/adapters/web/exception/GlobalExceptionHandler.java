@@ -1,6 +1,8 @@
 package com.myfootballapp.adapters.web.exception;
 
+import com.myfootballapp.adapters.web.dto.ErrorResponse;
 import com.myfootballapp.domain.exception.DomainException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,10 +11,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DomainException.class)
-    public ResponseEntity handleInvalidEmail(DomainException e) {
+    public ResponseEntity<ErrorResponse> handleDomain() {
         return ResponseEntity
-                .badRequest()
-                .body(new ErrorResponse(e.getMessage(), e.getCode()));
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("BUSINESS_ERROR", "Operation could not be completed"));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("INTERNAL_ERROR", "Unexpected server error"));
+    }
 }

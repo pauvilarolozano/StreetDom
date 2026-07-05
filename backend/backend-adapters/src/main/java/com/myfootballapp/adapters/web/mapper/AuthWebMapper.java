@@ -1,17 +1,52 @@
 package com.myfootballapp.adapters.web.mapper;
 
-import com.myfootballapp.adapters.web.dto.LoginUserRequest;
-import com.myfootballapp.adapters.web.dto.RegisterUserRequest;
-import com.myfootballapp.adapters.web.dto.UserResponse;
-import com.myfootballapp.domain.model.User;
+import com.myfootballapp.adapters.web.dto.*;
+import com.myfootballapp.ports.in.dto.AuthResult;
+import com.myfootballapp.ports.in.dto.TokensResult;
 import com.myfootballapp.ports.in.dto.LoginUserCommand;
 import com.myfootballapp.ports.in.dto.RegisterUserCommand;
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface AuthWebMapper {
+@Component
+public class AuthWebMapper {
 
-    LoginUserCommand toCommand(LoginUserRequest request);
-    RegisterUserCommand toCommand(RegisterUserRequest request);
-    UserResponse toResponse(User user);
+    public RegisterUserCommand toCommand(RegisterUserRequest request) {
+        return RegisterUserCommand.builder()
+                .username(request.username())
+                .password(request.password())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .build();
+    }
+
+    public LoginUserCommand toCommand(LoginUserRequest request) {
+
+        return new LoginUserCommand(request.username(), request.password());
+    }
+
+    public AuthResponse toResponse(AuthResult result) {
+
+        //UserResponse can return more fields, but at the moment it is enough
+        UserResponse userInfo = UserResponse.builder()
+                                    .id(result.user().getId())
+                                    .username(result.user().getUsername())
+                                    .build();
+
+        TokensResponse tokensResponse = new TokensResponse(
+                result.tokens().accessToken(),
+                result.tokens().refreshToken()
+        );
+
+        return new AuthResponse(userInfo,tokensResponse);
+    }
+
+
+    public TokensResponse toResponse(TokensResult tokensResult) {
+
+        return new TokensResponse(
+                tokensResult.accessToken(),
+                tokensResult.refreshToken()
+        );
+    }
 }

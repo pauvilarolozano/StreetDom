@@ -3,18 +3,16 @@ package com.myfootballapp.domain.model;
 import lombok.Builder;
 import lombok.Value;
 
-import java.time.LocalDateTime;
-
 @Value
 @Builder
 public class User {
     Long id;
     String username;
-    String password;
+    String passwordHash;
     String firstName;
     String lastName;
     String email;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    Role role;
+    @Builder.Default
+    Role role = Role.USER;
+
 }

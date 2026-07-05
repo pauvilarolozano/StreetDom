@@ -1,11 +1,8 @@
 package com.myfootballapp.adapters.web.dto;
 
-import lombok.Builder;
-import lombok.Value;
+import jakarta.validation.constraints.NotBlank;
 
-@Value
-@Builder
-public class LoginUserRequest {
-    String username;
-    String password;
-}
+public record LoginUserRequest (
+        @NotBlank String username,
+        @NotBlank String password
+) {}

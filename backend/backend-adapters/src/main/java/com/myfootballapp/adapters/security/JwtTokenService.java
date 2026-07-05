@@ -3,23 +3,24 @@ package com.myfootballapp.adapters.security;
 import com.myfootballapp.domain.model.User;
 import com.myfootballapp.ports.out.TokenServicePort;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 
-@AllArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class JwtTokenService implements TokenServicePort {
 
     private final JwtProvider jwtProvider;
 
     @Override
-    public String generateAccesToken(User user) {
-        return jwtProvider.generateToken(user.getEmail());
+    public String generateAccessToken(String username, String email) {
+        return jwtProvider.generateAccesToken(username, email);
     }
 
     @Override
-    public String generateRefreshToken(User user) {
-        return jwtProvider.generateToken(user.getEmail());
+    public String generateRefreshToken(String username) {
+        return jwtProvider.generateRefreshToken(username);
     }
 
     @Override

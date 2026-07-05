@@ -1,4 +1,4 @@
-package com.myfootballapp.adapters.repository.Entity;
+package com.myfootballapp.adapters.repository.entity;
 
 import com.myfootballapp.domain.model.Role;
 import jakarta.persistence.*;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="users")
+@Table(name="auth_user")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,7 +40,10 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist

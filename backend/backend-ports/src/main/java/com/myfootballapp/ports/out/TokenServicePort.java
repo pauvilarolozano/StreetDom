@@ -4,8 +4,8 @@ import com.myfootballapp.domain.model.User;
 
 public interface TokenServicePort {
 
-    String generateAccesToken(User user);
-    String generateRefreshToken(User user);
+    String generateAccessToken(String username, String email);
+    String generateRefreshToken(String username);
     String extractUsername(String token);
     boolean isValid(String token);
 }
