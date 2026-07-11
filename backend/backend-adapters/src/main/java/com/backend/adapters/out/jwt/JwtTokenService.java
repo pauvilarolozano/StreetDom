@@ -1,23 +1,26 @@
 package com.backend.adapters.out.jwt;
 
-import com.backend.application.port.out.TokenServicePort;
+import com.backend.application.port.out.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 
 @Component
-public class JwtTokenService implements TokenServicePort {
+public class JwtTokenService implements TokenService {
 
-    //TODO: secret key debe ser variable de entorno y cambiarla despues
-    private final Key secretKey =
-            Keys.hmacShaKeyFor(
-                    "secret-key-secret-key-secret-key-123".getBytes()
-            );
+    //TODO: anadir variables de entorno a docker
+    private final JwtConfigProperties jwtProperties;
+    private final Key secretKey;
+
+    public JwtTokenService(JwtConfigProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+    }
 
     @Override
     public String generateAccessToken(String username, String email) {
@@ -26,7 +29,8 @@ public class JwtTokenService implements TokenServicePort {
                 .claim("email", email)
                 .claim("type", "access")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+                //.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpiration()))
                 .signWith(secretKey)
                 .compact();
     }
@@ -37,21 +41,16 @@ public class JwtTokenService implements TokenServicePort {
                 .subject(username)
                 .claim("type", "refresh")
                 .issuedAt(new Date())
+                //.expiration(new Date(System.currentTimeMillis() + 7days
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshExpiration()))
                 .signWith(secretKey)
                 .compact();    }
-
-    @Override
-    public String extractUsername(String token) {
-        return getClaims(token).getSubject();    }
 
     @Override
     public boolean isValidAccessToken(String token) {
 
         try {
-            Claims claims = getClaims(token);
-
-            return claims.getExpiration().after(new Date()) &&
-                    "access".equals(claims.get("type",String.class));
+            return !isExpired(token) && isAccessToken(token);
 
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -59,11 +58,30 @@ public class JwtTokenService implements TokenServicePort {
         }
     }
 
+    @Override
+    public String extractUsername(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    @Override
+    public Instant extractExpiration(String token) {
+        return getClaims(token).getExpiration().toInstant();
+    }
+
+    private boolean isAccessToken(String token) {
+        return "access".equals(getClaims(token).get("type",String.class));
+    }
+
+    private boolean isExpired(String token) {
+        return getClaims(token).getExpiration().before(new Date());
+
+    }
+
     private Claims getClaims(String token) {
-            return Jwts.parser()
-                    .verifyWith((javax.crypto.SecretKey) secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+        return Jwts.parser()
+                .verifyWith((javax.crypto.SecretKey) secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

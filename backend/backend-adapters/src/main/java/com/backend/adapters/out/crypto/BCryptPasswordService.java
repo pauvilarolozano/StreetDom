@@ -1,13 +1,13 @@
 package com.backend.adapters.out.crypto;
 
-import com.backend.application.port.out.PasswordServicePort;
+import com.backend.application.port.out.PasswordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BCryptPasswordService implements PasswordServicePort {
+public class BCryptPasswordService implements PasswordService {
 
     private final PasswordEncoder encoder;
 

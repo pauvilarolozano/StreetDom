@@ -1,6 +1,6 @@
 package com.backend.adapters.security;
 
-import com.backend.application.port.out.TokenServicePort;
+import com.backend.application.port.out.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-    private final TokenServicePort tokenService;
+    private final TokenService tokenService;
     private final UserDetailsService userDetailsService;
 
     @Override

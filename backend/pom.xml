@@ -28,7 +28,7 @@
 		<module>backend-adapters</module>
 		<module>backend-application</module>
         <module>backend-boot</module>
-    </modules>
+	</modules>
 	<scm>
 		<connection/>
 		<developerConnection/>

@@ -3,7 +3,7 @@ package com.backend.adapters.out.persistence.repository;
 import com.backend.adapters.out.persistence.entity.UserEntity;
 import com.backend.adapters.out.persistence.jpa.UserJpaRepository;
 import com.backend.adapters.out.persistence.mapper.UserMapper;
-import com.backend.application.port.out.UserRepositoryPort;
+import com.backend.application.port.out.UserRepository;
 import com.backend.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepositoryAdapter implements UserRepositoryPort {
+public class UserRepositoryAdapter implements UserRepository {
 
     private final UserJpaRepository jpa;
     private final UserMapper userMapper;

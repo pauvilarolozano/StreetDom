@@ -1,6 +1,6 @@
 package com.backend.adapters.security;
 
-import com.backend.application.port.out.UserRepositoryPort;
+import com.backend.application.port.out.UserRepository;
 import com.backend.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepositoryPort authRepository;
+    private final UserRepository authRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

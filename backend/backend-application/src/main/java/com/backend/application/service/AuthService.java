@@ -1,5 +1,6 @@
 package com.backend.application.service;
 
+import com.backend.application.port.out.*;
 import com.backend.domain.exception.InvalidCredentialsException;
 import com.backend.domain.exception.RefreshTokenNotFoundException;
 import com.backend.domain.exception.UserAlreadyExistsException;
@@ -11,22 +12,21 @@ import com.backend.application.result.AuthResult;
 import com.backend.domain.model.User;
 import com.backend.application.result.TokensResult;
 import com.backend.application.port.in.AuthUseCase;
-import com.backend.application.port.out.PasswordServicePort;
-import com.backend.application.port.out.RefreshTokenRepositoryPort;
-import com.backend.application.port.out.UserRepositoryPort;
-import com.backend.application.port.out.TokenServicePort;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
 public class AuthService implements AuthUseCase {
 
-    private final UserRepositoryPort userRepository;
-    private final RefreshTokenRepositoryPort refreshTokenRepository;
-    private final TokenServicePort tokenService;
-    private final PasswordServicePort passwordService;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenService tokenService;
+    private final RefreshTokenFactory refreshTokenFactory;
+    private final PasswordService passwordService;
     private final AuthServiceMapper mapper;
 
     @Override
@@ -44,11 +44,11 @@ public class AuthService implements AuthUseCase {
         User userToSave = mapper.toDomain(userCommand, passwordHash);
         User userSaved = userRepository.save(userToSave);
 
-        String accessToken = tokenService.generateAccessToken(userSaved.getUsername(), userSaved.getEmail());
-        String refreshTokenValue = tokenService.generateRefreshToken(userSaved.getUsername());
-        refreshTokenRepository.save(RefreshToken.create(refreshTokenValue, userSaved));
+        String newAccessToken = tokenService.generateAccessToken(userSaved.getUsername(), userSaved.getEmail());
+        RefreshToken newRefreshToken = refreshTokenFactory.create(userSaved);
+        refreshTokenRepository.save(newRefreshToken);
 
-        return mapper.toResult(userSaved,accessToken,refreshTokenValue);
+        return mapper.toResult(userSaved,newAccessToken,newRefreshToken.getValue());
     }
 
     @Override
@@ -61,11 +61,11 @@ public class AuthService implements AuthUseCase {
             throw new InvalidCredentialsException();
         }
 
-        String accessToken = tokenService.generateAccessToken(user.getUsername(),user.getEmail());
-        String refreshTokenValue = tokenService.generateRefreshToken(user.getUsername());
-        refreshTokenRepository.save(RefreshToken.create(refreshTokenValue,user));
+        String newAccessToken = tokenService.generateAccessToken(user.getUsername(),user.getEmail());
+        RefreshToken newRefreshToken = refreshTokenFactory.create(user);
+        refreshTokenRepository.save(newRefreshToken);
 
-        return mapper.toResult(user,accessToken,refreshTokenValue);
+        return mapper.toResult(user,newAccessToken,newRefreshToken.getValue());
     }
 
     @Override
@@ -77,22 +77,16 @@ public class AuthService implements AuthUseCase {
         RefreshToken oldRefreshToken = refreshTokenRepository.findByToken(oldRefreshTokenValue)
                 .orElseThrow(RefreshTokenNotFoundException::new);
 
-        oldRefreshToken.validate();
+        oldRefreshToken.validate(Instant.now());
         oldRefreshToken.revoke();
         refreshTokenRepository.save(oldRefreshToken);
 
         User userFromToken = oldRefreshToken.getUser();
 
         String newAccessToken = tokenService.generateAccessToken(userFromToken.getUsername(), userFromToken.getEmail());
-        String newRefreshTokenValue = tokenService.generateRefreshToken(userFromToken.getUsername());
-
-        RefreshToken newRefreshToken = RefreshToken.createFromRotation(
-                newRefreshTokenValue,
-                userFromToken,
-                oldRefreshToken.getSessionMaxUntil()
-        );
+        RefreshToken newRefreshToken = refreshTokenFactory.rotate(oldRefreshToken);
         refreshTokenRepository.save(newRefreshToken);
 
-        return new TokensResult(newAccessToken,newRefreshTokenValue);
+        return new TokensResult(newAccessToken,newRefreshToken.getValue());
     }
 }

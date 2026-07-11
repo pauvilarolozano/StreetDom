@@ -5,8 +5,8 @@ import com.backend.domain.model.RefreshToken;
 
 import java.util.Optional;
 
-public interface RefreshTokenRepositoryPort {
+public interface RefreshTokenRepository {
 
-    RefreshToken save(RefreshToken refreshToken);
+    void save(RefreshToken refreshToken);
     Optional<RefreshToken> findByToken(String token);
 }
