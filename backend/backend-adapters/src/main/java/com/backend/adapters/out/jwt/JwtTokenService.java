@@ -2,6 +2,7 @@ package com.backend.adapters.out.jwt;
 
 import com.backend.application.port.out.TokenServicePort;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -46,17 +47,23 @@ public class JwtTokenService implements TokenServicePort {
     @Override
     public boolean isValidAccessToken(String token) {
 
-        Claims claims = getClaims(token);
+        try {
+            Claims claims = getClaims(token);
 
-        return claims.getExpiration().after(new Date()) &&
-                "access".equals(claims.get("type",String.class));
+            return claims.getExpiration().after(new Date()) &&
+                    "access".equals(claims.get("type",String.class));
+
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+
+        }
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser()
-                .verifyWith((javax.crypto.SecretKey) secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+            return Jwts.parser()
+                    .verifyWith((javax.crypto.SecretKey) secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
     }
 }
