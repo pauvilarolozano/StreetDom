@@ -27,7 +27,6 @@
 		<module>backend-domain</module>
 		<module>backend-adapters</module>
 		<module>backend-application</module>
-		<module>backend-ports</module>
         <module>backend-boot</module>
     </modules>
 	<scm>

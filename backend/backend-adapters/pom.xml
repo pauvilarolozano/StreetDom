@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.backend</groupId>
-            <artifactId>backend-ports</artifactId>
+            <artifactId>backend-application</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

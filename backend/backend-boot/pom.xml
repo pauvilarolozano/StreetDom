@@ -23,11 +23,6 @@
         </dependency>
         <dependency>
             <groupId>com.backend</groupId>
-            <artifactId>backend-ports</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.backend</groupId>
             <artifactId>backend-application</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

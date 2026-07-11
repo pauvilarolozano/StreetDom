@@ -1,7 +1,7 @@
 package com.backend.adapters.security;
 
+import com.backend.application.port.out.UserRepositoryPort;
 import com.backend.domain.model.User;
-import com.backend.ports.out.UserRepositoryPort;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
