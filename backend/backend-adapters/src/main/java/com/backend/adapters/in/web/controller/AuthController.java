@@ -23,7 +23,7 @@ public class AuthController {
     private final AuthUseCase authService;
     private final AuthWebMapper mapper;
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterUserRequest request) {
 
         RegisterUserCommand command = mapper.toCommand(request);
@@ -36,7 +36,7 @@ public class AuthController {
                 .body(response);
     }
 
-    @GetMapping("/login")
+    @GetMapping("/auth/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginUserRequest request) {
 
         LoginUserCommand command = mapper.toCommand(request);
@@ -49,7 +49,7 @@ public class AuthController {
                 .body(response);
     }
 
-    @GetMapping("/refresh")
+    @GetMapping("/auth/refresh")
     public ResponseEntity<TokensResponse> refresh(@RequestBody String oldRefreshToken) {
 
         TokensResult tokensResult = authService.refresh(oldRefreshToken);

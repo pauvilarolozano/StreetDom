@@ -23,6 +23,7 @@ public class JwtTokenService implements TokenServicePort {
         return Jwts.builder()
                 .subject(username)
                 .claim("email", email)
+                .claim("type", "access")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
                 .signWith(secretKey)
@@ -43,10 +44,12 @@ public class JwtTokenService implements TokenServicePort {
         return getClaims(token).getSubject();    }
 
     @Override
-    public boolean isValid(String token) {
-        return getClaims(token)
-                .getExpiration()
-                .after(new Date());
+    public boolean isValidAccessToken(String token) {
+
+        Claims claims = getClaims(token);
+
+        return claims.getExpiration().after(new Date()) &&
+                "access".equals(claims.get("type",String.class));
     }
 
     private Claims getClaims(String token) {

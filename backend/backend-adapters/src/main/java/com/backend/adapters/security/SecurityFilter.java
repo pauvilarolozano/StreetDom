@@ -5,21 +5,22 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenServicePort tokenService;
-    private final CustomUserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -33,23 +34,32 @@ public class SecurityFilter extends OncePerRequestFilter {
             return;
         }
 
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String token = header.substring(7);
+        authenticate(token);
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null && tokenService.isValid(token)) {
+        chain.doFilter(request, response);
+    }
 
-            String username = tokenService.extractUsername(token);
-            UserDetails user = userDetailsService.loadUserByUsername(username);
+    private void authenticate(String token) {
+        if (!tokenService.isValidAccessToken(token)) {
+            return;
+        }
 
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
+        String username = tokenService.extractUsername(token);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(
                         user,
                         null,
                         user.getAuthorities()
-                    );
+                );
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
-
-        chain.doFilter(request, response);
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }
