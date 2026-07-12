@@ -10,7 +10,7 @@
 	</parent>
 
 	<!--TODO: maybe need in the future <dependencyManagement> to manage the same versions of dependencies in different modules -->
-	<groupId>com.backend</groupId>
+	<groupId>com.streetdom</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -24,10 +24,10 @@
 		<developer/>
 	</developers>
 	<modules>
-		<module>backend-domain</module>
-		<module>backend-adapters</module>
-		<module>backend-application</module>
-        <module>backend-boot</module>
+		<module>domain</module>
+		<module>adapters</module>
+		<module>application</module>
+        <module>boot</module>
 	</modules>
 	<scm>
 		<connection/>
