@@ -11,10 +11,8 @@ public class UserMapper {
         return User.builder()
                 .id(userEntity.getId())
                 .username(userEntity.getUsername())
-                .passwordHash(userEntity.getPassword())
-                .firstName(userEntity.getFirstName())
-                .lastName(userEntity.getLastName())
                 .email(userEntity.getEmail())
+                .passwordHash(userEntity.getPassword())
                 .role(userEntity.getRole())
                 .build();
     }
@@ -23,10 +21,8 @@ public class UserMapper {
         return UserEntity.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .password(user.getPasswordHash())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
                 .email(user.getEmail())
+                .password(user.getPasswordHash())
                 .role(user.getRole())
                 .build();
     }

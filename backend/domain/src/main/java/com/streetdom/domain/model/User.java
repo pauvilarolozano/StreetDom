@@ -8,10 +8,8 @@ import lombok.Value;
 public class User {
     Long id;
     String username;
-    String passwordHash;
-    String firstName;
-    String lastName;
     String email;
+    String passwordHash;
     @Builder.Default
     Role role = Role.USER;
 

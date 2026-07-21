@@ -17,10 +17,8 @@ public class AuthWebMapper {
     public RegisterUserCommand toCommand(RegisterUserRequest request) {
         return RegisterUserCommand.builder()
                 .username(request.username())
-                .password(request.password())
-                .firstName(request.firstName())
-                .lastName(request.lastName())
                 .email(request.email())
+                .password(request.password())
                 .build();
     }
 

@@ -7,8 +7,6 @@ import lombok.Builder;
 @Builder
 public record RegisterUserRequest (
         @NotBlank String username,
-        @NotBlank String password,
-        @NotBlank String firstName,
-        @NotBlank String lastName,
-        @NotBlank @Email String email
+        @NotBlank @Email String email,
+        @NotBlank String password
 ) {}

@@ -13,10 +13,8 @@ public class AuthServiceMapper {
 
         return User.builder()
                 .username(registerUserCommand.username())
-                .passwordHash(passwordHash)
-                .firstName(registerUserCommand.firstName())
-                .lastName(registerUserCommand.lastName())
                 .email(registerUserCommand.email())
+                .passwordHash(passwordHash)
                 .build();
     }
 
