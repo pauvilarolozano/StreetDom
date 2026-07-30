@@ -17,6 +17,11 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepository {
     private final RefreshTokenMapper refreshMapper;
 
     @Override
+    public Optional<RefreshToken> findByToken(String token) {
+        return refreshTokenJpaRepository.findByToken(token).map(refreshMapper::toDomain);
+    }
+
+    @Override
     public void save(RefreshToken refreshToken) {
         RefreshTokenEntity refreshTokenSaved =
                 refreshTokenJpaRepository.save(refreshMapper.toEntity(refreshToken));
@@ -25,7 +30,7 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepository {
     }
 
     @Override
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenJpaRepository.findByToken(token).map(refreshMapper::toDomain);
+    public void revokeAllByUserId(Long userId) {
+        refreshTokenJpaRepository.revokeAllByUserId(userId);
     }
 }

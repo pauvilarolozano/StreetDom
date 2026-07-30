@@ -1,8 +1,6 @@
 package com.streetdom.application.service;
 
 import com.streetdom.application.port.out.*;
-import com.streetdom.application.port.out.*;
-import com.streetdom.application.port.out.*;
 import com.streetdom.domain.exception.InvalidCredentialsException;
 import com.streetdom.domain.exception.RefreshTokenNotFoundException;
 import com.streetdom.domain.exception.UserAlreadyExistsException;
@@ -50,10 +48,11 @@ public class AuthService implements AuthUseCase {
         RefreshToken newRefreshToken = refreshTokenFactory.create(userSaved);
         refreshTokenRepository.save(newRefreshToken);
 
-        return mapper.toResult(userSaved,newAccessToken,newRefreshToken.getValue());
+        return mapper.toResult(userSaved,newAccessToken,newRefreshToken.getToken());
     }
 
     @Override
+    @Transactional
     public AuthResult login(LoginUserCommand userCommand) {
 
         User user = userRepository.findByUsername(userCommand.username())
@@ -63,11 +62,12 @@ public class AuthService implements AuthUseCase {
             throw new InvalidCredentialsException();
         }
 
-        String newAccessToken = tokenService.generateAccessToken(user.getUsername(),user.getEmail());
-        RefreshToken newRefreshToken = refreshTokenFactory.create(user);
-        refreshTokenRepository.save(newRefreshToken);
+       refreshTokenRepository.revokeAllByUserId(user.getId());
+       String newAccessToken = tokenService.generateAccessToken(user.getUsername(),user.getEmail());
+       RefreshToken newRefreshToken = refreshTokenFactory.create(user);
+       refreshTokenRepository.save(newRefreshToken);
 
-        return mapper.toResult(user,newAccessToken,newRefreshToken.getValue());
+       return mapper.toResult(user,newAccessToken,newRefreshToken.getToken());
     }
 
     @Override
@@ -89,6 +89,6 @@ public class AuthService implements AuthUseCase {
         RefreshToken newRefreshToken = refreshTokenFactory.rotate(oldRefreshToken);
         refreshTokenRepository.save(newRefreshToken);
 
-        return new TokensResult(newAccessToken,newRefreshToken.getValue());
+        return new TokensResult(newAccessToken,newRefreshToken.getToken());
     }
 }

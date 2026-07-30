@@ -40,7 +40,7 @@ public class JwtRefreshTokenFactory implements RefreshTokenFactory {
 
     private RefreshToken createRefreshToken(String value, User user, Instant expiresAt, Instant sessionMaxUntil) {
         return RefreshToken.builder()
-                .value(value)
+                .token(value)
                 .user(user)
                 .expiresAt(expiresAt)
                 .sessionMaxUntil(sessionMaxUntil)

@@ -33,6 +33,7 @@ public class AuthWebMapper {
         UserResponse userInfo = UserResponse.builder()
                                     .id(result.user().getId())
                                     .username(result.user().getUsername())
+                                    .email(result.user().getEmail())
                                     .build();
 
         TokensResponse tokensResponse = new TokensResponse(

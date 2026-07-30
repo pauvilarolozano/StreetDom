@@ -13,7 +13,7 @@ public class RefreshTokenMapper {
 
     public RefreshToken toDomain(RefreshTokenEntity entity) {
         return RefreshToken.builder()
-                .value(entity.getToken())
+                .token(entity.getToken())
                 .user(userMapper.toDomain(entity.getUser()))
                 .expiresAt(entity.getExpiresAt())
                 .sessionMaxUntil(entity.getSessionMaxUntil())
@@ -23,7 +23,7 @@ public class RefreshTokenMapper {
 
     public RefreshTokenEntity toEntity(RefreshToken refreshToken) {
         return RefreshTokenEntity.builder()
-                .token(refreshToken.getValue())
+                .token(refreshToken.getToken())
                 .user(userMapper.toEntity(refreshToken.getUser()))
                 .expiresAt(refreshToken.getExpiresAt())
                 .sessionMaxUntil(refreshToken.getSessionMaxUntil())

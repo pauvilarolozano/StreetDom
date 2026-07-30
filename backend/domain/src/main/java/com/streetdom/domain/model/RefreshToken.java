@@ -12,7 +12,7 @@ import java.time.Instant;
 @Getter
 public class RefreshToken {
 
-    String value;
+    String token;
     User user;
     Instant expiresAt;
     Instant sessionMaxUntil;

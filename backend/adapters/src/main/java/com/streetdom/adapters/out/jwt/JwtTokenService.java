@@ -29,7 +29,6 @@ public class JwtTokenService implements TokenService {
                 .claim("email", email)
                 .claim("type", "access")
                 .issuedAt(new Date())
-                //.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15
                 .expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpiration()))
                 .signWith(secretKey)
                 .compact();
@@ -41,7 +40,6 @@ public class JwtTokenService implements TokenService {
                 .subject(username)
                 .claim("type", "refresh")
                 .issuedAt(new Date())
-                //.expiration(new Date(System.currentTimeMillis() + 7days
                 .expiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshExpiration()))
                 .signWith(secretKey)
                 .compact();    }

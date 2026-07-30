@@ -17,14 +17,14 @@ public class UserRepositoryAdapter implements UserRepository {
     private final UserMapper userMapper;
 
     @Override
-    public User save(User user) {
-        UserEntity userSaved = jpa.save(userMapper.toEntity(user));
-        return userMapper.toDomain(userSaved);
+    public Optional<User> findByUsername(String username) {
+        return jpa.findByUsername(username).map(userMapper::toDomain);
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return jpa.findByUsername(username).map(userMapper::toDomain);
+    public User save(User user) {
+        UserEntity userSaved = jpa.save(userMapper.toEntity(user));
+        return userMapper.toDomain(userSaved);
     }
 
     @Override

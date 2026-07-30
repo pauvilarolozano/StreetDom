@@ -5,6 +5,7 @@ import java.util.Optional;
 
 public interface RefreshTokenRepository {
 
-    void save(RefreshToken refreshToken);
     Optional<RefreshToken> findByToken(String token);
+    void save(RefreshToken refreshToken);
+    void revokeAllByUserId(Long userId);
 }

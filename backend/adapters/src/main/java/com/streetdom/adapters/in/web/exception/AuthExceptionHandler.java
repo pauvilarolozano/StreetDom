@@ -2,12 +2,14 @@ package com.streetdom.adapters.in.web.exception;
 
 import com.streetdom.adapters.in.web.response.ErrorResponse;
 import com.streetdom.domain.exception.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 //TODO: check correctly where should be living each exception
+@Slf4j
 @RestControllerAdvice
 public class AuthExceptionHandler {
 
@@ -17,7 +19,8 @@ public class AuthExceptionHandler {
             SessionExpiredException.class,
             RefreshTokenNotFoundException.class
     })
-    public ResponseEntity<ErrorResponse> handleSession() {
+    public ResponseEntity<ErrorResponse> handleSession(RuntimeException ex) {
+        log.warn("Session error", ex);
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse("SESSION_EXPIRED","Please sign in again"));
