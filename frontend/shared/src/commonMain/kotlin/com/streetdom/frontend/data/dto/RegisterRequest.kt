@@ -1,5 +1,8 @@
 package com.streetdom.frontend.data.dto
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class RegisterRequest(
     val username: String,
     val email: String,

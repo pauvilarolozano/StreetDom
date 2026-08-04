@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.streetdom.frontend.domain.model.RegisterCredentials
+import com.streetdom.frontend.domain.result.AuthResult
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -55,51 +55,58 @@ class RegisterViewModel (
         uiState = uiState.copy(isLoading = true, registerError = null)
 
         viewModelScope.launch {
-            try {
-                val authsession = authUseCase.register(credentials)
-            } catch (e: Exception) {
-                uiState = uiState.copy(registerError = "Error registering")
-            } finally {
-                uiState = uiState.copy(isLoading = false)
-            }
+            delay(3000.milliseconds) //TODO borrar en el futuro
+            register(credentials)
         }
     }
 
+    private suspend fun register(credentials: RegisterCredentials) {
+        when (authUseCase.register(credentials)) {
+            is AuthResult.Success -> {
+                uiState = uiState.copy(isLoading = false, registerError = null)
+                //TODO navegar a otra pantalla
+
+            } is AuthResult.UserAlreadyExists -> {
+                uiState = uiState.copy(isLoading = false, registerError = "User already exists")
+
+            } is AuthResult.NetworkError -> {
+                uiState = uiState.copy(isLoading = false, registerError = "Network error")
+
+            } else -> {
+                uiState = uiState.copy(isLoading = false, registerError = "Server error")
+            }
+        }
+
+    }
+
     private fun validateForm(): Boolean {
+        val usernameError =
+            if (uiState.username.isBlank()) "Username is required" else null
 
-        var valid = true
-
-        if (uiState.username.isBlank()) {
-            uiState = uiState.copy(usernameError = "Username is required")
-            valid = false
+        val emailError = when {
+            uiState.email.isBlank() -> "Email is required"
+            "@" !in uiState.email -> "Invalid email"
+            else -> null
         }
 
-        if (uiState.email.isBlank()) {
-            uiState = uiState.copy(emailError = "Email is required")
-            valid = false
+        val passwordError =
+            if (uiState.password.isBlank()) "Password is required" else null
+
+        val confirmPasswordError = when {
+            uiState.confirmPassword.isBlank() -> "Confirm password is required"
+            uiState.password != uiState.confirmPassword -> "Passwords do not match"
+            else -> null
         }
 
-        if (!uiState.email.contains("@")) {
-            uiState = uiState.copy(emailError = "Invalid email")
-            valid = false
-        }
+        uiState = uiState.copy(
+            usernameError = usernameError,
+            emailError = emailError,
+            passwordError = passwordError,
+            confirmPasswordError = confirmPasswordError
+        )
 
-        if (uiState.password.isBlank()) {
-            uiState = uiState.copy(passwordError = "Password is required")
-            valid = false
-        }
-
-        if (uiState.confirmPassword.isBlank()) {
-            uiState = uiState.copy(confirmPasswordError = "Confirm password is required")
-            valid = false
-        }
-
-        if (uiState.password != uiState.confirmPassword) {
-            uiState = uiState.copy(confirmPasswordError = "Passwords do not match")
-            valid = false
-        }
-
-        return valid
+        return usernameError == null && emailError == null &&
+                passwordError == null && confirmPasswordError == null
     }
 
 }

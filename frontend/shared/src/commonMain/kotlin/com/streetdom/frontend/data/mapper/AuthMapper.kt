@@ -10,8 +10,7 @@ import com.streetdom.frontend.domain.model.RegisterCredentials
 fun AuthResponse.toDomain(): AuthSession {
     return AuthSession(
         user = user.toDomain(),
-        accessToken = accessToken,
-        refreshToken = refreshToken
+        tokens = tokens.toDomain()
     )
 }
 

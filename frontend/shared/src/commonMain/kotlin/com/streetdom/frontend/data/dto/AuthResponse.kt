@@ -1,8 +1,10 @@
 package com.streetdom.frontend.data.dto
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class AuthResponse(
     val user: UserResponse,
-    val accessToken: String,
-    val refreshToken: String
+    val tokens: TokensResponse
 )
 

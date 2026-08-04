@@ -10,10 +10,11 @@ import com.streetdom.frontend.di.initKoin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        initKoin()
+        enableEdgeToEdge()
+
+        initKoin(this)
 
         setContent {
             StreetDomApp()

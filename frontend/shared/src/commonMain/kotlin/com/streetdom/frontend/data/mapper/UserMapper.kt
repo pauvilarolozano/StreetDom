@@ -7,8 +7,7 @@ fun UserResponse.toDomain(): User {
     return User(
         id = id,
         username = username,
-        email = email,
-        role = role
+        email = email
     )
 }
 

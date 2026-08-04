@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.model.LoginCredentials
+import com.streetdom.frontend.domain.result.AuthResult
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -16,7 +17,6 @@ class LoginViewModel (
 ): ViewModel() {
 
     //TODO hacerlo con stateflow cuando haya mas flows, validacion de formularios
-    //TODO excepciones en el fututo las gestiona useCase
 
     var uiState by mutableStateOf(LoginUiState())
         private set
@@ -39,32 +39,43 @@ class LoginViewModel (
         uiState = uiState.copy(isLoading = true, loginError = null)
 
         viewModelScope.launch {
-            try {
-                delay(3000.milliseconds)
-                val authSession = authUseCase.login(credentials)
-            } catch (e: Exception) {
-                uiState = uiState.copy(loginError = "Error logging in")
-            } finally {
-                uiState = uiState.copy(isLoading = false)
+            login(credentials)
+        }
+    }
+
+    private suspend fun login(credentials: LoginCredentials) {
+
+        when (authUseCase.login(credentials)) {
+            is AuthResult.Success -> {
+                uiState = uiState.copy(isLoading = false,loginError = null)
+                //TODO navegar a otra pantalla
+
+            } is AuthResult.InvalidCredentials -> {
+                uiState = uiState.copy(isLoading = false,loginError = "Invalid credentials")
+
+            }is AuthResult.NetworkError -> {
+                uiState = uiState.copy(isLoading = false, loginError = "Network error")
+
+            } else -> {
+                uiState = uiState.copy(isLoading = false, loginError = "Server error")
             }
         }
     }
 
     private fun validateForm(): Boolean {
 
-        var valid = true
+        val usernameError =
+            if (uiState.username.isBlank()) "Username is required" else null
 
-        if (uiState.username.isBlank()) {
-            uiState = uiState.copy(usernameError = "Username is required")
-            valid = false
-        }
+        val passwordError =
+            if (uiState.password.isBlank()) "Password is required" else null
 
-        if (uiState.password.isBlank()) {
-            uiState = uiState.copy(passwordError = "Password is required")
-            valid = false
-        }
+        uiState = uiState.copy(
+            usernameError = usernameError,
+            passwordError = passwordError
+        )
 
-        return valid
+        return usernameError == null && passwordError == null
     }
 
 }
