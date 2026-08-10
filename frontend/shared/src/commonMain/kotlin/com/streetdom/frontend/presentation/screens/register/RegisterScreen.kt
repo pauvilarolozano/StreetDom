@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,9 +19,22 @@ import com.streetdom.frontend.presentation.components.SDTextField
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun RegisterScreen (onLoginClick: () -> Unit) {
+fun RegisterScreen (
+    onRegisterSuccess: () -> Unit,
+    onLoginClick: () -> Unit
+) {
 
     val viewModel: RegisterViewModel = koinViewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                RegisterEvent.RegisterSuccess -> {
+                    onRegisterSuccess()
+                }
+            }
+        }
+    }
 
     RegisterContent(
         uiState = viewModel.uiState,
@@ -34,7 +48,7 @@ fun RegisterScreen (onLoginClick: () -> Unit) {
 }
 
 @Composable
-private fun RegisterContent(
+fun RegisterContent(
     uiState: RegisterUiState,
     onUsernameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,

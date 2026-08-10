@@ -6,8 +6,12 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun LoginScreenPreview() {
-
-    LoginScreen(
+    
+    LoginContent(
+        uiState = LoginUiState(),
+        onUsernameChange = {},
+        onPasswordChange = {},
+        onLoginClick = {},
         onRegisterClick = {}
     )
 

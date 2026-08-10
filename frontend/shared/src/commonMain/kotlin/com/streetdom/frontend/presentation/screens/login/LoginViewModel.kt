@@ -8,18 +8,21 @@ import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.model.LoginCredentials
 import com.streetdom.frontend.domain.result.AuthResult
 import com.streetdom.frontend.domain.useCase.AuthUseCase
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 class LoginViewModel (
     private val authUseCase: AuthUseCase
 ): ViewModel() {
 
-    //TODO hacerlo con stateflow cuando haya mas flows, validacion de formularios
+    //TODO hacerlo con stateflow cuando haya mas flows, validacion de formularios?
 
     var uiState by mutableStateOf(LoginUiState())
         private set
+
+    private val _events = MutableSharedFlow<LoginEvent>()
+    val events = _events.asSharedFlow()
 
     fun onUsernameChange(username: String) {
         uiState = uiState.copy(username = username, usernameError = null, loginError = null)
@@ -48,7 +51,7 @@ class LoginViewModel (
         when (authUseCase.login(credentials)) {
             is AuthResult.Success -> {
                 uiState = uiState.copy(isLoading = false,loginError = null)
-                //TODO navegar a otra pantalla
+                _events.emit(LoginEvent.LoginSuccess)
 
             } is AuthResult.InvalidCredentials -> {
                 uiState = uiState.copy(isLoading = false,loginError = "Invalid credentials")

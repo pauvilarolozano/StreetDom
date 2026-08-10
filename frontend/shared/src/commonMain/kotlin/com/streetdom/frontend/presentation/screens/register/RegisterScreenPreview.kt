@@ -7,7 +7,13 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 fun RegisterScreenPreview() {
 
-    RegisterScreen(
+    RegisterContent(
+        uiState = RegisterUiState(),
+        onUsernameChange = {},
+        onEmailChange = {},
+        onPasswordChange = {},
+        onConfirmPasswordChange = {},
+        onRegisterClick = {},
         onLoginClick = {}
     )
 }

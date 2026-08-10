@@ -8,19 +8,21 @@ import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.model.RegisterCredentials
 import com.streetdom.frontend.domain.result.AuthResult
 import com.streetdom.frontend.domain.useCase.AuthUseCase
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 class RegisterViewModel (
     private val authUseCase: AuthUseCase
 ): ViewModel() {
 
-    //TODO hacerlo con stateflow cunado hayas mas flows, validacion de formularios
-    //TODO excepciones en el fututo las gestiona useCase
+    //TODO hacerlo con stateflow cunado hayas mas flows, validacion de formularios?
 
     var uiState by mutableStateOf(RegisterUiState())
         private set
+
+    private val _events = MutableSharedFlow<RegisterEvent>()
+    val events = _events.asSharedFlow()
 
     fun onUsernameChange(username: String) {
         uiState = uiState.copy(username = username, usernameError = null, registerError = null)
@@ -55,7 +57,6 @@ class RegisterViewModel (
         uiState = uiState.copy(isLoading = true, registerError = null)
 
         viewModelScope.launch {
-            delay(3000.milliseconds) //TODO borrar en el futuro
             register(credentials)
         }
     }
@@ -64,7 +65,7 @@ class RegisterViewModel (
         when (authUseCase.register(credentials)) {
             is AuthResult.Success -> {
                 uiState = uiState.copy(isLoading = false, registerError = null)
-                //TODO navegar a otra pantalla
+                _events.emit(RegisterEvent.RegisterSuccess)
 
             } is AuthResult.UserAlreadyExists -> {
                 uiState = uiState.copy(isLoading = false, registerError = "User already exists")
