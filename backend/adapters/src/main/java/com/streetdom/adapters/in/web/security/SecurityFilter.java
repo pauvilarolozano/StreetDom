@@ -1,4 +1,4 @@
-package com.streetdom.adapters.security;
+package com.streetdom.adapters.in.web.security;
 
 import com.streetdom.application.port.out.TokenService;
 import jakarta.servlet.FilterChain;
@@ -24,8 +24,13 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws IOException, ServletException {
+            HttpServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         String header = request.getHeader("Authorization");
 
@@ -34,31 +39,30 @@ public class SecurityFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            chain.doFilter(request, response);
+        String token = header.substring(7);
+
+        try {
+            authenticate(token);
+        } catch (RuntimeException e) {
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-
-        String token = header.substring(7);
-        authenticate(token);
 
         chain.doFilter(request, response);
     }
 
     private void authenticate(String token) {
-        if (!tokenService.isValidAccessToken(token)) {
-            return;
-        }
+
+        tokenService.validateAccessToken(token);
 
         String username = tokenService.extractUsername(token);
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
-        UsernamePasswordAuthenticationToken auth =
-                new UsernamePasswordAuthenticationToken(
-                        user,
-                        null,
-                        user.getAuthorities()
-                );
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                user,
+                null,
+                user.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(auth);
     }

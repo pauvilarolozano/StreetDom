@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 public interface RefreshTokenJpaRepository extends JpaRepository<RefreshTokenEntity, String> {
-    Optional<RefreshTokenEntity> findByToken(String token);
+    Optional<RefreshTokenEntity> findByTokenHash(String token);
 
     @Modifying
     @Transactional

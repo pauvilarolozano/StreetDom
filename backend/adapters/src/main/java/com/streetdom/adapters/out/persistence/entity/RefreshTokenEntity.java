@@ -16,8 +16,7 @@ import java.time.Instant;
 public class RefreshTokenEntity {
 
     @Id
-    private String token;
-
+    private String tokenHash;
     private Instant expiresAt;
     private Instant sessionMaxUntil;
     private boolean revoked;

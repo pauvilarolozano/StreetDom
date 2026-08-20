@@ -1,6 +1,5 @@
 package com.streetdom.adapters.out.persistence.repository;
 
-import com.streetdom.adapters.out.persistence.entity.RefreshTokenEntity;
 import com.streetdom.adapters.out.persistence.jpa.RefreshTokenJpaRepository;
 import com.streetdom.adapters.out.persistence.mapper.RefreshTokenMapper;
 import com.streetdom.application.port.out.RefreshTokenRepository;
@@ -17,16 +16,13 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepository {
     private final RefreshTokenMapper refreshMapper;
 
     @Override
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenJpaRepository.findByToken(token).map(refreshMapper::toDomain);
+    public Optional<RefreshToken> findByTokenHash(String token) {
+        return refreshTokenJpaRepository.findByTokenHash(token).map(refreshMapper::toDomain);
     }
 
     @Override
     public void save(RefreshToken refreshToken) {
-        RefreshTokenEntity refreshTokenSaved =
-                refreshTokenJpaRepository.save(refreshMapper.toEntity(refreshToken));
-
-        refreshMapper.toDomain(refreshTokenSaved);
+        refreshTokenJpaRepository.save(refreshMapper.toEntity(refreshToken));
     }
 
     @Override

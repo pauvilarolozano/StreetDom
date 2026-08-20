@@ -1,12 +1,18 @@
 package com.streetdom.application.port.in;
 
-import com.streetdom.application.result.TokensResult;
+import com.streetdom.application.port.in.result.TokensResult;
 import com.streetdom.application.command.LoginUserCommand;
 import com.streetdom.application.command.RegisterUserCommand;
-import com.streetdom.application.result.AuthResult;
+import com.streetdom.application.port.in.result.AuthResult;
 
 public interface AuthUseCase {
+
     AuthResult register(RegisterUserCommand userCommand);
+
     AuthResult login(LoginUserCommand userCommand);
-    TokensResult refresh(String oldRefreshToken);
+
+    TokensResult refresh(String refreshToken);
+
+    void logout(String refreshToken);
+
 }

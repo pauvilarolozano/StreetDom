@@ -1,6 +1,7 @@
 package com.streetdom.application.service;
 
 import com.streetdom.application.port.out.*;
+import com.streetdom.application.port.out.result.RefreshTokenBundle;
 import com.streetdom.domain.exception.InvalidCredentialsException;
 import com.streetdom.domain.exception.RefreshTokenNotFoundException;
 import com.streetdom.domain.exception.UserAlreadyExistsException;
@@ -8,17 +9,16 @@ import com.streetdom.application.mapper.AuthServiceMapper;
 import com.streetdom.domain.model.RefreshToken;
 import com.streetdom.application.command.LoginUserCommand;
 import com.streetdom.application.command.RegisterUserCommand;
-import com.streetdom.application.result.AuthResult;
+import com.streetdom.application.port.in.result.AuthResult;
 import com.streetdom.domain.model.User;
-import com.streetdom.application.result.TokensResult;
+import com.streetdom.application.port.in.result.TokensResult;
 import com.streetdom.application.port.in.AuthUseCase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Service;
 import java.time.Instant;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class AuthService implements AuthUseCase {
 
@@ -26,8 +26,9 @@ public class AuthService implements AuthUseCase {
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenService tokenService;
     private final RefreshTokenFactory refreshTokenFactory;
-    private final PasswordService passwordService;
-    private final AuthServiceMapper mapper;
+    private final TokenHasher tokenHasher;
+    private final PasswordHasher passwordHasher;
+    private final AuthServiceMapper authMapper;
 
     @Override
     @Transactional
@@ -37,18 +38,17 @@ public class AuthService implements AuthUseCase {
             throw new UserAlreadyExistsException();
         }
 
-        //TODO: check minimum security of the new password
-        //passwordService.isValid(userCommand.getPassword())
+        // TODO: check minimum security of the new password
 
-        String passwordHash = passwordService.hash(userCommand.password());
-        User userToSave = mapper.toDomain(userCommand, passwordHash);
-        User userSaved = userRepository.save(userToSave);
+        String passwordHash = passwordHasher.hash(userCommand.password());
+        User newUser = authMapper.userToDomain(userCommand, passwordHash);
+        userRepository.save(newUser);
 
-        String newAccessToken = tokenService.generateAccessToken(userSaved.getUsername(), userSaved.getEmail());
-        RefreshToken newRefreshToken = refreshTokenFactory.create(userSaved);
-        refreshTokenRepository.save(newRefreshToken);
+        String newAccessToken = tokenService.generateAccessToken(newUser.getUsername(), newUser.getEmail());
+        RefreshTokenBundle generatedRefresh = refreshTokenFactory.create(newUser);
+        refreshTokenRepository.save(generatedRefresh.domainToken());
 
-        return mapper.toResult(userSaved,newAccessToken,newRefreshToken.getToken());
+        return authMapper.authSessionToResult(newUser, newAccessToken, generatedRefresh.rawTokenValue());
     }
 
     @Override
@@ -58,37 +58,57 @@ public class AuthService implements AuthUseCase {
         User user = userRepository.findByUsername(userCommand.username())
                 .orElseThrow(InvalidCredentialsException::new);
 
-       if (!passwordService.matches(userCommand.password(),user.getPasswordHash())) {
+        if (!passwordHasher.matches(userCommand.password(), user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
 
-       refreshTokenRepository.revokeAllByUserId(user.getId());
-       String newAccessToken = tokenService.generateAccessToken(user.getUsername(),user.getEmail());
-       RefreshToken newRefreshToken = refreshTokenFactory.create(user);
-       refreshTokenRepository.save(newRefreshToken);
+        refreshTokenRepository.revokeAllByUserId(user.getId());
+        String newAccessToken = tokenService.generateAccessToken(user.getUsername(), user.getEmail());
+        RefreshTokenBundle generatedRefresh = refreshTokenFactory.create(user);
+        refreshTokenRepository.save(generatedRefresh.domainToken());
 
-       return mapper.toResult(user,newAccessToken,newRefreshToken.getToken());
+        return authMapper.authSessionToResult(user, newAccessToken, generatedRefresh.rawTokenValue());
     }
 
     @Override
     @Transactional
-    //TODO anadir campo familyId para invalidar anteriores refreshtoken del usuario en ese dispositivo
-    //TODO: atomic update to avoid future problems with concurrency if 2 refresh request at the same time
-    public TokensResult refresh(String oldRefreshTokenValue) {
+    // TODO: atomic update to avoid future problems with concurrency if 2 refresh
+    // request at the same time?
+    public TokensResult refresh(String refreshToken) {
 
-        RefreshToken oldRefreshToken = refreshTokenRepository.findByToken(oldRefreshTokenValue)
+        tokenService.validateRefreshToken(refreshToken);
+        String refreshTokenHash = tokenHasher.hash(refreshToken);
+
+        RefreshToken storedRefreshToken = refreshTokenRepository.findByTokenHash(refreshTokenHash)
                 .orElseThrow(RefreshTokenNotFoundException::new);
 
-        oldRefreshToken.validate(Instant.now());
-        oldRefreshToken.revoke();
-        refreshTokenRepository.save(oldRefreshToken);
+        storedRefreshToken.validate(Instant.now());
+        storedRefreshToken.revoke();
+        refreshTokenRepository.save(storedRefreshToken);
 
-        User userFromToken = oldRefreshToken.getUser();
+        User user = storedRefreshToken.getUser();
 
-        String newAccessToken = tokenService.generateAccessToken(userFromToken.getUsername(), userFromToken.getEmail());
-        RefreshToken newRefreshToken = refreshTokenFactory.rotate(oldRefreshToken);
-        refreshTokenRepository.save(newRefreshToken);
+        String newAccessToken = tokenService.generateAccessToken(user.getUsername(), user.getEmail());
+        RefreshTokenBundle generatedRefresh = refreshTokenFactory.rotate(storedRefreshToken);
+        refreshTokenRepository.save(generatedRefresh.domainToken());
 
-        return new TokensResult(newAccessToken,newRefreshToken.getToken());
+        return new TokensResult(newAccessToken, generatedRefresh.rawTokenValue());
+    }
+
+    @Override
+    @Transactional
+    public void logout(String refreshToken) {
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+
+        String refreshTokenHash = tokenHasher.hash(refreshToken);
+
+        refreshTokenRepository.findByTokenHash(refreshTokenHash)
+                .ifPresent(activeRefreshToken -> {
+                    activeRefreshToken.revoke();
+                    refreshTokenRepository.save(activeRefreshToken);
+                });
     }
 }

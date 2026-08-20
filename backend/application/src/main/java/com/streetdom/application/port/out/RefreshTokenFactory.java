@@ -1,9 +1,12 @@
 package com.streetdom.application.port.out;
 
+import com.streetdom.application.port.out.result.RefreshTokenBundle;
 import com.streetdom.domain.model.RefreshToken;
 import com.streetdom.domain.model.User;
 
 public interface RefreshTokenFactory {
-    RefreshToken create(User user);
-    RefreshToken rotate(RefreshToken refreshToken);
+
+    RefreshTokenBundle create(User user);
+
+    RefreshTokenBundle rotate(RefreshToken currentToken);
 }

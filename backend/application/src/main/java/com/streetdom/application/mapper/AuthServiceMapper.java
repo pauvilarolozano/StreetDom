@@ -1,15 +1,16 @@
 package com.streetdom.application.mapper;
 
 import com.streetdom.domain.model.User;
-import com.streetdom.application.result.AuthResult;
+import com.streetdom.application.port.in.result.AuthResult;
+import com.streetdom.application.port.in.result.UserResult;
 import com.streetdom.application.command.RegisterUserCommand;
-import com.streetdom.application.result.TokensResult;
+import com.streetdom.application.port.in.result.TokensResult;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuthServiceMapper {
 
-    public User toDomain(RegisterUserCommand registerUserCommand, String passwordHash) {
+    public User userToDomain(RegisterUserCommand registerUserCommand, String passwordHash) {
 
         return User.builder()
                 .username(registerUserCommand.username())
@@ -18,11 +19,12 @@ public class AuthServiceMapper {
                 .build();
     }
 
-    public AuthResult toResult(User user, String accessToken, String refreshToken) {
+    public AuthResult authSessionToResult(User user, String accessToken, String refreshToken) {
 
-        TokensResult tokensResult = new TokensResult(accessToken,refreshToken);
+        UserResult userResult = new UserResult(user.getId(), user.getUsername(), user.getEmail());
+        TokensResult tokensResult = new TokensResult(accessToken, refreshToken);
 
-        return new AuthResult(user,tokensResult);
+        return new AuthResult(userResult, tokensResult);
     }
 
 }

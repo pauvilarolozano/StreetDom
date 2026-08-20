@@ -1,4 +1,4 @@
-package com.streetdom.adapters.security;
+package com.streetdom.adapters.in.web.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

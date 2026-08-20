@@ -1,4 +1,4 @@
-package com.streetdom.adapters.security;
+package com.streetdom.adapters.in.web.security;
 
 import com.streetdom.application.port.out.UserRepository;
 import com.streetdom.domain.model.User;

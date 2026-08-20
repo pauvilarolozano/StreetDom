@@ -1,11 +1,12 @@
 package com.streetdom.adapters.out.jwt;
 
 import com.streetdom.application.port.out.RefreshTokenFactory;
+import com.streetdom.application.port.out.TokenHasher;
+import com.streetdom.application.port.out.result.RefreshTokenBundle;
 import com.streetdom.domain.model.RefreshToken;
 import com.streetdom.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.time.Duration;
 import java.time.Instant;
 
@@ -15,36 +16,35 @@ public class JwtRefreshTokenFactory implements RefreshTokenFactory {
 
     private final JwtTokenService jwtTokenService;
     private final JwtConfigProperties jwtConfigProperties;
+    private final TokenHasher hasher;
 
     @Override
-    public RefreshToken create(User user) {
+    public RefreshTokenBundle create(User user) {
+        // TODO: (Clean Code/Testing) no depender del reloj estático del sistema (Instant.now)
 
-        String newRefreshTokenValue = jwtTokenService.generateRefreshToken(user.getUsername());
-        Instant expiration = jwtTokenService.extractExpiration(newRefreshTokenValue);
-        Instant sessionMaxExpiration =
-                Instant.now().plus(Duration.ofMillis(jwtConfigProperties.getSessionMaxExpiration()));
+        Instant sessionMaxExpiration = Instant.now()
+                .plus(Duration.ofMillis(jwtConfigProperties.getSessionMaxExpiration()));
 
-        return createRefreshToken(newRefreshTokenValue,user,expiration,sessionMaxExpiration);
+        return generateBundle(user, sessionMaxExpiration);
     }
 
     @Override
-    public RefreshToken rotate(RefreshToken refreshToken) {
-
-        User userFromToken = refreshToken.getUser();
-
-        String newRefreshTokenValue = jwtTokenService.generateRefreshToken(refreshToken.getUser().getUsername());
-        Instant expiration = jwtTokenService.extractExpiration(newRefreshTokenValue);
-
-        return createRefreshToken(newRefreshTokenValue,userFromToken,expiration,refreshToken.getSessionMaxUntil());
+    public RefreshTokenBundle rotate(RefreshToken currentToken) {
+        return generateBundle(currentToken.getUser(), currentToken.getSessionMaxUntil());
     }
 
-    private RefreshToken createRefreshToken(String value, User user, Instant expiresAt, Instant sessionMaxUntil) {
-        return RefreshToken.builder()
-                .token(value)
-                .user(user)
-                .expiresAt(expiresAt)
+    private RefreshTokenBundle generateBundle(User user, Instant sessionMaxUntil) {
+        String newTokenRaw = jwtTokenService.generateRefreshToken(user.getUsername());
+        Instant expiration = jwtTokenService.extractExpiration(newTokenRaw);
+
+        RefreshToken newToken = RefreshToken.builder()
+                .tokenHash(hasher.hash(newTokenRaw))
+                .expiresAt(expiration)
                 .sessionMaxUntil(sessionMaxUntil)
+                .user(user)
                 .revoked(false)
                 .build();
+
+        return new RefreshTokenBundle(newToken, newTokenRaw);
     }
 }

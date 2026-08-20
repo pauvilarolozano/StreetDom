@@ -1,4 +1,4 @@
-package com.streetdom.adapters.security;
+package com.streetdom.adapters.in.web.security;
 
 import com.streetdom.domain.model.User;
 import lombok.RequiredArgsConstructor;

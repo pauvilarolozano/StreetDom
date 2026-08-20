@@ -9,8 +9,8 @@ import com.streetdom.adapters.in.web.mapper.AuthWebMapper;
 import com.streetdom.application.command.LoginUserCommand;
 import com.streetdom.application.command.RegisterUserCommand;
 import com.streetdom.application.port.in.AuthUseCase;
-import com.streetdom.application.result.AuthResult;
-import com.streetdom.application.result.TokensResult;
+import com.streetdom.application.port.in.result.AuthResult;
+import com.streetdom.application.port.in.result.TokensResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthUseCase authUseCase;
     private final AuthWebMapper mapper;
 
-    @PostMapping("/auth/register")
+    @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterUserRequest request) {
 
         RegisterUserCommand command = mapper.toCommand(request);
@@ -40,7 +40,7 @@ public class AuthController {
                 .body(response);
     }
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginUserRequest request) {
 
         LoginUserCommand command = mapper.toCommand(request);
@@ -51,22 +51,24 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/auth/refresh")
-    public ResponseEntity<TokensResponse> refresh(@RequestBody RefreshTokenRequest oldRefreshToken) {
+    @PostMapping("/refresh")
+    public ResponseEntity<TokensResponse> refresh(@RequestBody RefreshTokenRequest request) {
 
-        TokensResult tokensResult = authUseCase.refresh(oldRefreshToken.token());
-        TokensResponse response = mapper.toResponse(tokensResult);
+        TokensResult result = authUseCase.refresh(request.token());
+        TokensResponse response = mapper.toResponse(result);
 
         return ResponseEntity.ok(response);
     }
-
+    /*
     @GetMapping("/me")
     public ResponseEntity<String> me() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok("Autentificado: "+auth.getName());
-    }
+        return ResponseEntity.ok("Identification: " + auth.getName());
+    }*/
 
-    public ResponseEntity<AuthResponse> logout(@RequestBody String TODO) {
-        return null;
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody RefreshTokenRequest refreshToken) {
+        authUseCase.logout(refreshToken.token());
+        return ResponseEntity.noContent().build();
     }
 }

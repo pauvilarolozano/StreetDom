@@ -13,20 +13,20 @@ public class RefreshTokenMapper {
 
     public RefreshToken toDomain(RefreshTokenEntity entity) {
         return RefreshToken.builder()
-                .token(entity.getToken())
-                .user(userMapper.toDomain(entity.getUser()))
+                .tokenHash(entity.getTokenHash())
                 .expiresAt(entity.getExpiresAt())
                 .sessionMaxUntil(entity.getSessionMaxUntil())
+                .user(userMapper.toDomain(entity.getUser()))
                 .revoked(entity.isRevoked())
                 .build();
     }
 
     public RefreshTokenEntity toEntity(RefreshToken refreshToken) {
         return RefreshTokenEntity.builder()
-                .token(refreshToken.getToken())
-                .user(userMapper.toEntity(refreshToken.getUser()))
+                .tokenHash(refreshToken.getTokenHash())
                 .expiresAt(refreshToken.getExpiresAt())
                 .sessionMaxUntil(refreshToken.getSessionMaxUntil())
+                .user(userMapper.toEntity(refreshToken.getUser()))
                 .revoked(refreshToken.isRevoked())
                 .build();
     }

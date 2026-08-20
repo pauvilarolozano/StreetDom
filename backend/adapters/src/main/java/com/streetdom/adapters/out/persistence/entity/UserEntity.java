@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="auth_user")
+@Table(name = "auth_user")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +27,7 @@ public class UserEntity {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String passwordHash;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

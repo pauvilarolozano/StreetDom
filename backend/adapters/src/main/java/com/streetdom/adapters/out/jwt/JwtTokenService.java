@@ -1,59 +1,65 @@
 package com.streetdom.adapters.out.jwt;
 
 import com.streetdom.application.port.out.TokenService;
+import com.streetdom.domain.exception.InvalidTokenException;
+import com.streetdom.domain.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtTokenService implements TokenService {
 
-    //TODO: anadir variables de entorno a docker
     private final JwtConfigProperties jwtProperties;
     private final Key secretKey;
 
     public JwtTokenService(JwtConfigProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
-        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public String generateAccessToken(String username, String email) {
+        Date now = new Date();
         return Jwts.builder()
                 .subject(username)
                 .claim("email", email)
                 .claim("type", "access")
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpiration()))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtProperties.getAccessExpiration()))
                 .signWith(secretKey)
                 .compact();
     }
 
     @Override
     public String generateRefreshToken(String username) {
+        Date now = new Date();
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(username)
                 .claim("type", "refresh")
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshExpiration()))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtProperties.getRefreshExpiration()))
                 .signWith(secretKey)
-                .compact();    }
+                .compact();
+    }
 
     @Override
-    public boolean isValidAccessToken(String token) {
+    public void validateAccessToken(String token) {
+        validateTokenType(token, "access");
+    }
 
-        try {
-            return !isExpired(token) && isAccessToken(token);
-
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-
-        }
+    @Override
+    public void validateRefreshToken(String token) {
+        validateTokenType(token, "refresh");
     }
 
     @Override
@@ -66,13 +72,19 @@ public class JwtTokenService implements TokenService {
         return getClaims(token).getExpiration().toInstant();
     }
 
-    private boolean isAccessToken(String token) {
-        return "access".equals(getClaims(token).get("type",String.class));
-    }
+    private void validateTokenType(String token, String expectedType) {
+        try {
+            Claims claims = getClaims(token);
+            if (!expectedType.equals(claims.get("type", String.class))) {
+                throw new InvalidTokenException("Provided token is not of type: " + expectedType);
+            }
 
-    private boolean isExpired(String token) {
-        return getClaims(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
 
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new InvalidTokenException("Invalid structure or signature for " + expectedType + " token");
+        }
     }
 
     private Claims getClaims(String token) {

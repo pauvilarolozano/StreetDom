@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel (
     private val authUseCase: AuthUseCase
+
 ): ViewModel() {
 
     //TODO hacerlo con stateflow cunado hayas mas flows, validacion de formularios?

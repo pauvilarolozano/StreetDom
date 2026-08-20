@@ -33,6 +33,7 @@ class AuthUseCase (
         return when (result) {
             is AuthResult.Success -> {
                 tokensRepository.saveTokens(result.authSession.tokens)
+                userRepository.saveUser(result.authSession.user)
                 result
             }
 

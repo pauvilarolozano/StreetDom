@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AuthExceptionHandler {
 
     @ExceptionHandler({
+            InvalidTokenException.class,
+            TokenExpiredException.class,
+            RefreshTokenNotFoundException.class,
             RefreshTokenReuseException.class,
-            RefreshTokenExpiredException.class,
-            SessionExpiredException.class,
-            RefreshTokenNotFoundException.class
+            SessionExpiredException.class
     })
-    public ResponseEntity<ErrorResponse> handleSession(RuntimeException ex) {
-        log.warn("Session error", ex);
+    public ResponseEntity<ErrorResponse> handleToken(RuntimeException ex) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse("SESSION_EXPIRED","Please sign in again"));
+                .body(new ErrorResponse("INVALID_TOKEN","Please sign in again"));
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
