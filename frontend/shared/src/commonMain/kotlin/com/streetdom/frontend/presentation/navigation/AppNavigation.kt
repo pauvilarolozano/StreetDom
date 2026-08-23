@@ -63,9 +63,16 @@ fun AppNavigation() {
 
         composable(Screen.Home.route) {
             HomeScreen(
-                {},
-                {},
-                {}
+                onNavigateToRanking = {},
+                onNavigateToInventory = {},
+                onNavigateToProfile = {},
+                onLogoutSuccess = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
     }

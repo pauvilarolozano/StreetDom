@@ -11,6 +11,7 @@ fun HomePreview() {
         onPlayClick = {},
         onRankingClick = {},
         onInventoryClick = {},
-        onProfileClick = {}
+        onProfileClick = {},
+        onLogoutClick = {}
     )
 }

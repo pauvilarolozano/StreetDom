@@ -6,4 +6,6 @@ object ApiConfig {
     const val LOGIN_URL = "/auth/login"
     const val REGISTER_URL = "/auth/register"
     const val REFRESH_URL = "/auth/refresh"
+    const val LOGOUT_URL = "/auth/logout"
+
 }

@@ -25,7 +25,6 @@ fun RegisterCredentials.toRequest(): RegisterRequest {
     return RegisterRequest(
         username = username,
         email = email,
-        password = password,
-        confirmPassword = confirmPassword
+        password = password
     )
 }

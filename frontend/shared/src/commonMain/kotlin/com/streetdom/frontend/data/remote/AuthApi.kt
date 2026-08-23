@@ -11,5 +11,6 @@ interface AuthApi {
     suspend fun login(request: LoginRequest): AuthResponse
     suspend fun register(request: RegisterRequest): AuthResponse
     suspend fun refresh(request: RefreshTokenRequest): TokensResponse
+    suspend fun logout(request: RefreshTokenRequest)
 
 }

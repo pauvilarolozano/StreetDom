@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface RefreshTokenJpaRepository extends JpaRepository<RefreshTokenEntity, String> {
     Optional<RefreshTokenEntity> findByTokenHash(String token);
@@ -14,9 +15,9 @@ public interface RefreshTokenJpaRepository extends JpaRepository<RefreshTokenEnt
     @Modifying
     @Transactional
     @Query("""
-        UPDATE RefreshTokenEntity r
-        SET r.revoked = true
-        WHERE r.user.id = :userId
-    """)
-    void revokeAllByUserId(Long userId);
+                UPDATE RefreshTokenEntity r
+                SET r.revoked = true
+                WHERE r.user.id = :userId
+            """)
+    void revokeAllByUserId(UUID userId);
 }

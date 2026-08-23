@@ -38,4 +38,10 @@ class KtorAuthApi (
 
         return response.body()
     }
+
+    override suspend fun logout(request: RefreshTokenRequest) {
+        httpClient.post(ApiConfig.LOGOUT_URL) {
+            setBody(request)
+        }
+    }
 }

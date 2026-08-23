@@ -3,21 +3,11 @@ package com.streetdom.application.mapper;
 import com.streetdom.domain.model.User;
 import com.streetdom.application.port.in.result.AuthResult;
 import com.streetdom.application.port.in.result.UserResult;
-import com.streetdom.application.command.RegisterUserCommand;
 import com.streetdom.application.port.in.result.TokensResult;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuthServiceMapper {
-
-    public User userToDomain(RegisterUserCommand registerUserCommand, String passwordHash) {
-
-        return User.builder()
-                .username(registerUserCommand.username())
-                .email(registerUserCommand.email())
-                .passwordHash(passwordHash)
-                .build();
-    }
 
     public AuthResult authSessionToResult(User user, String accessToken, String refreshToken) {
 

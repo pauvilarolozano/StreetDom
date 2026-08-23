@@ -8,7 +8,7 @@ import com.streetdom.frontend.data.repository.CurrentUserRepositoryImpl
 import com.streetdom.frontend.data.repository.TokensRepositoryImpl
 import com.streetdom.frontend.domain.repository.AuthRepository
 import com.streetdom.frontend.domain.repository.TokensRepository
-import com.streetdom.frontend.domain.repository.UserRepository
+import com.streetdom.frontend.domain.repository.CurrentUserRepository
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import com.streetdom.frontend.presentation.screens.home.HomeViewModel
 import com.streetdom.frontend.presentation.screens.login.LoginViewModel
@@ -31,7 +31,7 @@ val commonModule = module {
         TokensRepositoryImpl(get())
     }
 
-    single<UserRepository>{
+    single<CurrentUserRepository>{
         CurrentUserRepositoryImpl(get(),get())
     }
 
@@ -59,7 +59,7 @@ val commonModule = module {
     }
 
     factory <HomeViewModel> {
-        HomeViewModel(get())
+        HomeViewModel(get(),get())
     }
 
 }

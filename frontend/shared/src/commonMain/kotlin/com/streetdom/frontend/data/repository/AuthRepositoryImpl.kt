@@ -1,5 +1,6 @@
 package com.streetdom.frontend.data.repository
 
+import com.streetdom.frontend.data.dto.RefreshTokenRequest
 import com.streetdom.frontend.data.mapper.toDomain
 import com.streetdom.frontend.data.mapper.toRequest
 import com.streetdom.frontend.data.remote.AuthApi
@@ -9,7 +10,6 @@ import com.streetdom.frontend.domain.repository.AuthRepository
 import com.streetdom.frontend.domain.result.AuthResult
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.flow.merge
 import kotlinx.io.IOException
 
 class AuthRepositoryImpl(
@@ -70,6 +70,10 @@ class AuthRepositoryImpl(
 
     override suspend fun refresh(refreshToken: String): AuthResult {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun logout(refreshToken: String) {
+        authApi.logout(RefreshTokenRequest(refreshToken))
     }
 
 }

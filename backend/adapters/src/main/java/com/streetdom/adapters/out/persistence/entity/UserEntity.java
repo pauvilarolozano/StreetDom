@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "auth_user")
@@ -17,8 +18,7 @@ import java.time.LocalDateTime;
 public class UserEntity {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     private String username;

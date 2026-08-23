@@ -5,16 +5,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.streetdom.frontend.domain.repository.UserRepository
+import com.streetdom.frontend.domain.repository.CurrentUserRepository
+import com.streetdom.frontend.domain.useCase.AuthUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: CurrentUserRepository,
+    private val authUseCase: AuthUseCase
 
 ) : ViewModel() {
     
     var uiState by mutableStateOf(HomeUiState())
         private set
+
+    private val _events = MutableSharedFlow<HomeEvent>()
+    val events = _events.asSharedFlow()
 
     init {
         loadUser()
@@ -22,6 +29,13 @@ class HomeViewModel(
 
     fun onPlayClick() {
         // Lógica para iniciar el juego
+    }
+
+    fun onLogoutClick() {
+        viewModelScope.launch {
+            authUseCase.logout()
+            _events.emit(HomeEvent.LogoutSuccess)
+        }
     }
 
     private fun loadUser() {

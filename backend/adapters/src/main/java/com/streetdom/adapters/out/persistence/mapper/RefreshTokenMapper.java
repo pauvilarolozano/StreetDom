@@ -1,6 +1,7 @@
 package com.streetdom.adapters.out.persistence.mapper;
 
 import com.streetdom.adapters.out.persistence.entity.RefreshTokenEntity;
+import com.streetdom.adapters.out.persistence.entity.UserEntity;
 import com.streetdom.domain.model.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

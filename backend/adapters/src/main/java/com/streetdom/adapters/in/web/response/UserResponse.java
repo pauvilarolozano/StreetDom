@@ -1,10 +1,11 @@
 package com.streetdom.adapters.in.web.response;
 
 import lombok.Builder;
+import java.util.UUID;
 
 @Builder
 public record UserResponse (
-        Long id,
+        UUID id,
         String username,
         String email
 ) {}

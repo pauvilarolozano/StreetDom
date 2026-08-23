@@ -41,7 +41,7 @@ public class AuthService implements AuthUseCase {
         // TODO: check minimum security of the new password
 
         String passwordHash = passwordHasher.hash(userCommand.password());
-        User newUser = authMapper.userToDomain(userCommand, passwordHash);
+        User newUser = User.create(userCommand.username(),userCommand.email(),passwordHash);
         userRepository.save(newUser);
 
         String newAccessToken = tokenService.generateAccessToken(newUser.getUsername(), newUser.getEmail());
@@ -103,9 +103,7 @@ public class AuthService implements AuthUseCase {
             return;
         }
 
-        String refreshTokenHash = tokenHasher.hash(refreshToken);
-
-        refreshTokenRepository.findByTokenHash(refreshTokenHash)
+        refreshTokenRepository.findByTokenHash(tokenHasher.hash(refreshToken))
                 .ifPresent(activeRefreshToken -> {
                     activeRefreshToken.revoke();
                     refreshTokenRepository.save(activeRefreshToken);

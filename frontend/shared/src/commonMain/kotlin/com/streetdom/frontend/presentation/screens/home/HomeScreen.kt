@@ -3,6 +3,7 @@ package com.streetdom.frontend.presentation.screens.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -12,16 +13,26 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     onNavigateToRanking: () -> Unit,
     onNavigateToInventory: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onLogoutSuccess: () -> Unit = {}
 ) {
     val viewModel: HomeViewModel = koinViewModel()
+    
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                HomeEvent.LogoutSuccess -> onLogoutSuccess()
+            }
+        }
+    }
     
     HomeContent(
         uiState = viewModel.uiState,
         onPlayClick = viewModel::onPlayClick,
         onRankingClick = onNavigateToRanking,
         onInventoryClick = onNavigateToInventory,
-        onProfileClick = onNavigateToProfile
+        onProfileClick = onNavigateToProfile,
+        onLogoutClick = viewModel::onLogoutClick
     )
 }
 
@@ -31,12 +42,18 @@ fun HomeContent(
     onPlayClick: () -> Unit,
     onRankingClick: () -> Unit,
     onInventoryClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("StreetDom") }
+                title = { Text("StreetDom") },
+                actions = {
+                    IconButton(onClick = onLogoutClick) {
+                        Text("🚪")
+                    }
+                }
             )
         }
     ) { paddingValues ->
