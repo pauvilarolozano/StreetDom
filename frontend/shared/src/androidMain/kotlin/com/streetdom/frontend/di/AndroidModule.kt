@@ -8,10 +8,18 @@ import com.streetdom.frontend.data.security.AndroidEncryptionManager
 import com.streetdom.frontend.data.security.EncryptionManager
 import com.streetdom.frontend.data.storage.AndroidSecureStorage
 import com.streetdom.frontend.domain.storage.SecureStorage
+import com.streetdom.frontend.presentation.screens.play.map.MapConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
-val androidModule = module {
+
+fun androidModule(mapTilerApiKey: String) = module {
+
+    single {
+        MapConfig(
+            mapTilerApiKey = mapTilerApiKey
+        )
+    }
 
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(

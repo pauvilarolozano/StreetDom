@@ -4,12 +4,15 @@ import android.content.Context
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-fun initKoin(context: Context) {
+fun initKoin(
+    context: Context,
+    mapTilerApiKey: String
+) {
     startKoin {
         androidContext(context)
         modules(
             commonModule,
-            androidModule
+            androidModule(mapTilerApiKey)
         )
     }
 

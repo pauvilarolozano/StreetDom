@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.model.LoginCredentials
-import com.streetdom.frontend.domain.result.AuthResult
+import com.streetdom.frontend.domain.result.LoginResult
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -49,14 +49,14 @@ class LoginViewModel (
     private suspend fun login(credentials: LoginCredentials) {
 
         when (authUseCase.login(credentials)) {
-            is AuthResult.Success -> {
+            is LoginResult.Success -> {
                 uiState = uiState.copy(isLoading = false,loginError = null)
                 _events.emit(LoginEvent.LoginSuccess)
 
-            } is AuthResult.InvalidCredentials -> {
+            } is LoginResult.InvalidCredentials -> {
                 uiState = uiState.copy(isLoading = false,loginError = "Invalid credentials")
 
-            }is AuthResult.NetworkError -> {
+            }is LoginResult.NetworkError -> {
                 uiState = uiState.copy(isLoading = false, loginError = "Network error")
 
             } else -> {

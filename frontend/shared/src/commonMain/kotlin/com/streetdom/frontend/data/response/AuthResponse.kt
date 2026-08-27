@@ -1,4 +1,4 @@
-package com.streetdom.frontend.data.dto
+package com.streetdom.frontend.data.response
 
 import kotlinx.serialization.Serializable
 

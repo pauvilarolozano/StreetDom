@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.streetdom.frontend.presentation.screens.home.HomeScreen
 import com.streetdom.frontend.presentation.screens.login.LoginScreen
+import com.streetdom.frontend.presentation.screens.play.PlayScreen
 import com.streetdom.frontend.presentation.screens.register.RegisterScreen
 import com.streetdom.frontend.presentation.screens.splash.SplashScreen
 
@@ -18,10 +19,16 @@ fun AppNavigation() {
         navController,
         startDestination = Screen.Splash.route
     ) {
-
         composable(Screen.Splash.route) {
             SplashScreen(
-                onSplashFinished = {
+                onAuthenticated = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onUnauthenticated = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Splash.route) {
                             inclusive = true
@@ -63,6 +70,9 @@ fun AppNavigation() {
 
         composable(Screen.Home.route) {
             HomeScreen(
+                onNavigateToPlay = {
+                    navController.navigate(Screen.Play.route)
+                },
                 onNavigateToRanking = {},
                 onNavigateToInventory = {},
                 onNavigateToProfile = {},
@@ -72,6 +82,14 @@ fun AppNavigation() {
                             inclusive = true
                         }
                     }
+                }
+            )
+        }
+
+        composable(Screen.Play.route) {
+            PlayScreen(
+                onBack = {
+                    navController.popBackStack()
                 }
             )
         }

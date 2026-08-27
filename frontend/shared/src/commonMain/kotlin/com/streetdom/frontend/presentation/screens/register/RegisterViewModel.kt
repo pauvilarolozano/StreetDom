@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.model.RegisterCredentials
-import com.streetdom.frontend.domain.result.AuthResult
+import com.streetdom.frontend.domain.result.RegisterResult
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -64,14 +64,14 @@ class RegisterViewModel (
 
     private suspend fun register(credentials: RegisterCredentials) {
         when (authUseCase.register(credentials)) {
-            is AuthResult.Success -> {
+            is RegisterResult.Success -> {
                 uiState = uiState.copy(isLoading = false, registerError = null)
                 _events.emit(RegisterEvent.RegisterSuccess)
 
-            } is AuthResult.UserAlreadyExists -> {
+            } is RegisterResult.UserAlreadyExists -> {
                 uiState = uiState.copy(isLoading = false, registerError = "User already exists")
 
-            } is AuthResult.NetworkError -> {
+            } is RegisterResult.NetworkError -> {
                 uiState = uiState.copy(isLoading = false, registerError = "Network error")
 
             } else -> {

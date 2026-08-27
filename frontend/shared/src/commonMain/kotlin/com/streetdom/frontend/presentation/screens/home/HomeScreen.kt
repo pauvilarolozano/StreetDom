@@ -11,6 +11,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
+    onNavigateToPlay: () -> Unit,
     onNavigateToRanking: () -> Unit,
     onNavigateToInventory: () -> Unit,
     onNavigateToProfile: () -> Unit,
@@ -28,7 +29,7 @@ fun HomeScreen(
     
     HomeContent(
         uiState = viewModel.uiState,
-        onPlayClick = viewModel::onPlayClick,
+        onPlayClick = onNavigateToPlay,
         onRankingClick = onNavigateToRanking,
         onInventoryClick = onNavigateToInventory,
         onProfileClick = onNavigateToProfile,

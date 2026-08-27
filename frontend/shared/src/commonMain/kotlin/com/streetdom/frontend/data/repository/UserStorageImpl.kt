@@ -1,14 +1,14 @@
 package com.streetdom.frontend.data.repository
 
 import com.streetdom.frontend.domain.model.User
-import com.streetdom.frontend.domain.repository.CurrentUserRepository
+import com.streetdom.frontend.domain.storage.UserStorage
 import com.streetdom.frontend.domain.storage.SecureStorage
 import kotlinx.serialization.json.Json
 
-class CurrentUserRepositoryImpl (
+class UserStorageImpl (
     private val secureStorage: SecureStorage,
     private val json: Json
-) : CurrentUserRepository {
+) : UserStorage {
 
     private companion object {
         const val USER_KEY = "auth_user"

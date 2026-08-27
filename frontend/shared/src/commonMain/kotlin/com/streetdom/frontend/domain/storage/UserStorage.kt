@@ -1,8 +1,8 @@
-package com.streetdom.frontend.domain.repository
+package com.streetdom.frontend.domain.storage
 
 import com.streetdom.frontend.domain.model.User
 
-interface CurrentUserRepository {
+interface UserStorage {
     suspend fun getCurrentUser(): User?
     suspend fun saveUser(user: User)
     suspend fun clear()

@@ -1,10 +1,11 @@
-package com.streetdom.frontend.data.dto
+package com.streetdom.frontend.data.response
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RegisterRequest(
+data class UserResponse(
+    val id: String,
     val username: String,
     val email: String,
-    val password: String
 )
+

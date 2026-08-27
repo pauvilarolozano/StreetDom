@@ -14,7 +14,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
-        initKoin(this)
+        initKoin(
+            context = this,
+            mapTilerApiKey = BuildConfig.MAPTILER_API_KEY
+        )
 
         setContent {
             StreetDomApp()

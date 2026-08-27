@@ -5,14 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.streetdom.frontend.domain.repository.CurrentUserRepository
+import com.streetdom.frontend.domain.storage.UserStorage
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val userRepository: CurrentUserRepository,
+    private val userStorage: UserStorage,
     private val authUseCase: AuthUseCase
 
 ) : ViewModel() {
@@ -27,10 +27,6 @@ class HomeViewModel(
         loadUser()
     }
 
-    fun onPlayClick() {
-        // Lógica para iniciar el juego
-    }
-
     fun onLogoutClick() {
         viewModelScope.launch {
             authUseCase.logout()
@@ -43,7 +39,7 @@ class HomeViewModel(
             uiState = uiState.copy(isLoading = true)
 
             try {
-                val user = userRepository.getCurrentUser()
+                val user = userStorage.getCurrentUser()
 
                 uiState = uiState.copy(
                     currentUser = user,

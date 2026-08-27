@@ -3,23 +3,23 @@ package com.streetdom.frontend.domain.useCase
 import com.streetdom.frontend.domain.model.LoginCredentials
 import com.streetdom.frontend.domain.model.RegisterCredentials
 import com.streetdom.frontend.domain.repository.AuthRepository
-import com.streetdom.frontend.domain.repository.TokensRepository
-import com.streetdom.frontend.domain.repository.CurrentUserRepository
-import com.streetdom.frontend.domain.result.AuthResult
+import com.streetdom.frontend.domain.result.GetProfileResult
+import com.streetdom.frontend.domain.result.LoginResult
+import com.streetdom.frontend.domain.result.RegisterResult
+import com.streetdom.frontend.domain.storage.TokensStorage
+import com.streetdom.frontend.domain.storage.UserStorage
 
 class AuthUseCase (
     private val authRepository: AuthRepository,
-    private val tokensRepository: TokensRepository,
-    private val currentUserRepository: CurrentUserRepository
+    private val tokensStorage: TokensStorage,
+    private val userStorage: UserStorage
 ) {
 
-    suspend fun login(credentials: LoginCredentials): AuthResult {
-        val result = authRepository.login(credentials)
-
-        return when (result) {
-            is AuthResult.Success -> {
-                tokensRepository.saveTokens(result.authSession.tokens)
-                currentUserRepository.saveUser(result.authSession.user)
+    suspend fun login(credentials: LoginCredentials): LoginResult {
+        return when (val result = authRepository.login(credentials)) {
+            is LoginResult.Success -> {
+                tokensStorage.saveTokens(result.authSession.tokens)
+                userStorage.saveUser(result.authSession.user)
                 result
             }
 
@@ -27,13 +27,11 @@ class AuthUseCase (
         }
     }
 
-    suspend fun register(credentials: RegisterCredentials): AuthResult {
-        val result = authRepository.register(credentials)
-
-        return when (result) {
-            is AuthResult.Success -> {
-                tokensRepository.saveTokens(result.authSession.tokens)
-                currentUserRepository.saveUser(result.authSession.user)
+    suspend fun register(credentials: RegisterCredentials): RegisterResult {
+        return when (val result = authRepository.register(credentials)) {
+            is RegisterResult.Success -> {
+                tokensStorage.saveTokens(result.authSession.tokens)
+                userStorage.saveUser(result.authSession.user)
                 result
             }
 
@@ -43,14 +41,25 @@ class AuthUseCase (
 
     suspend fun logout() {
         try {
-            tokensRepository.getRefreshToken()?.let { refreshToken ->
+            tokensStorage.getRefreshToken()?.let { refreshToken ->
                 authRepository.logout(refreshToken)
             }
-        } catch (e: Exception) {
-            // Ignoramos errores de red: el logout local debe seguir
+        } catch (_: Exception) {
+            // We ignore errors: local logout must proceed regardless.
         } finally {
-            tokensRepository.clear()
-            currentUserRepository.clear()
+            tokensStorage.clear()
+            userStorage.clear()
+        }
+    }
+
+    suspend fun authenticatedSession(): Boolean {
+        return when (val result = authRepository.me()) {
+            is GetProfileResult.Success -> {
+                userStorage.saveUser(result.user)
+                true
+            }
+
+            else -> false
         }
     }
 

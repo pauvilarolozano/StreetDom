@@ -1,9 +1,20 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
 }
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use {
+        localProperties.load(it)
+    }
+}
+
+val mapTilerApiKey = localProperties.getProperty("MAPTILER_API_KEY", "")
 
 kotlin {
     compilerOptions {
@@ -29,6 +40,12 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField(
+            "String",
+            "MAPTILER_API_KEY",
+            "\"$mapTilerApiKey\""
+        )
     }
     packaging {
         resources {
@@ -50,5 +67,6 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }

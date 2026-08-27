@@ -1,8 +1,8 @@
-package com.streetdom.frontend.domain.repository
+package com.streetdom.frontend.domain.storage
 
 import com.streetdom.frontend.domain.model.Tokens
 
-interface TokensRepository {
+interface TokensStorage {
 
     suspend fun saveTokens(tokens: Tokens)
     suspend fun getAccessToken(): String?

@@ -2,11 +2,11 @@ package com.streetdom.frontend.data.repository
 
 import com.streetdom.frontend.domain.storage.SecureStorage
 import com.streetdom.frontend.domain.model.Tokens
-import com.streetdom.frontend.domain.repository.TokensRepository
+import com.streetdom.frontend.domain.storage.TokensStorage
 
-class TokensRepositoryImpl(
+class TokensStorageImpl(
     private val secureStorage: SecureStorage
-): TokensRepository {
+): TokensStorage {
 
     private companion object {
         const val ACCESS_TOKEN_KEY = "access_token"
