@@ -1,6 +1,6 @@
 package com.streetdom.adapters.in.web.response;
 
-public record AuthResponse (
+public record AuthSessionResponse(
         UserResponse user,
         TokensResponse tokens
 ) {}

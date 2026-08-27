@@ -1,15 +1,17 @@
 package com.streetdom.application.service;
 
+import com.streetdom.application.port.in.result.UserResult;
 import com.streetdom.application.port.out.*;
 import com.streetdom.application.port.out.result.RefreshTokenBundle;
 import com.streetdom.domain.exception.InvalidCredentialsException;
 import com.streetdom.domain.exception.RefreshTokenNotFoundException;
 import com.streetdom.domain.exception.UserAlreadyExistsException;
 import com.streetdom.application.mapper.AuthServiceMapper;
+import com.streetdom.domain.exception.UserNotFoundException;
 import com.streetdom.domain.model.RefreshToken;
 import com.streetdom.application.command.LoginUserCommand;
 import com.streetdom.application.command.RegisterUserCommand;
-import com.streetdom.application.port.in.result.AuthResult;
+import com.streetdom.application.port.in.result.SessionResult;
 import com.streetdom.domain.model.User;
 import com.streetdom.application.port.in.result.TokensResult;
 import com.streetdom.application.port.in.AuthUseCase;
@@ -24,7 +26,7 @@ public class AuthService implements AuthUseCase {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final TokenService tokenService;
+    private final TokenSigner tokenSigner;
     private final RefreshTokenFactory refreshTokenFactory;
     private final TokenHasher tokenHasher;
     private final PasswordHasher passwordHasher;
@@ -32,7 +34,7 @@ public class AuthService implements AuthUseCase {
 
     @Override
     @Transactional
-    public AuthResult register(RegisterUserCommand userCommand) {
+    public SessionResult register(RegisterUserCommand userCommand) {
 
         if (userRepository.existsByUsername(userCommand.username())) {
             throw new UserAlreadyExistsException();
@@ -44,16 +46,16 @@ public class AuthService implements AuthUseCase {
         User newUser = User.create(userCommand.username(),userCommand.email(),passwordHash);
         userRepository.save(newUser);
 
-        String newAccessToken = tokenService.generateAccessToken(newUser.getUsername(), newUser.getEmail());
+        String newAccessToken = tokenSigner.generateAccessToken(newUser.getUsername(), newUser.getEmail());
         RefreshTokenBundle generatedRefresh = refreshTokenFactory.create(newUser);
         refreshTokenRepository.save(generatedRefresh.domainToken());
 
-        return authMapper.authSessionToResult(newUser, newAccessToken, generatedRefresh.rawTokenValue());
+        return authMapper.toResult(newUser, newAccessToken, generatedRefresh.rawTokenValue());
     }
 
     @Override
     @Transactional
-    public AuthResult login(LoginUserCommand userCommand) {
+    public SessionResult login(LoginUserCommand userCommand) {
 
         User user = userRepository.findByUsername(userCommand.username())
                 .orElseThrow(InvalidCredentialsException::new);
@@ -63,11 +65,11 @@ public class AuthService implements AuthUseCase {
         }
 
         refreshTokenRepository.revokeAllByUserId(user.getId());
-        String newAccessToken = tokenService.generateAccessToken(user.getUsername(), user.getEmail());
+        String newAccessToken = tokenSigner.generateAccessToken(user.getUsername(), user.getEmail());
         RefreshTokenBundle generatedRefresh = refreshTokenFactory.create(user);
         refreshTokenRepository.save(generatedRefresh.domainToken());
 
-        return authMapper.authSessionToResult(user, newAccessToken, generatedRefresh.rawTokenValue());
+        return authMapper.toResult(user, newAccessToken, generatedRefresh.rawTokenValue());
     }
 
     @Override
@@ -76,7 +78,7 @@ public class AuthService implements AuthUseCase {
     // request at the same time?
     public TokensResult refresh(String refreshToken) {
 
-        tokenService.validateRefreshToken(refreshToken);
+        tokenSigner.validateRefreshToken(refreshToken);
         String refreshTokenHash = tokenHasher.hash(refreshToken);
 
         RefreshToken storedRefreshToken = refreshTokenRepository.findByTokenHash(refreshTokenHash)
@@ -88,7 +90,7 @@ public class AuthService implements AuthUseCase {
 
         User user = storedRefreshToken.getUser();
 
-        String newAccessToken = tokenService.generateAccessToken(user.getUsername(), user.getEmail());
+        String newAccessToken = tokenSigner.generateAccessToken(user.getUsername(), user.getEmail());
         RefreshTokenBundle generatedRefresh = refreshTokenFactory.rotate(storedRefreshToken);
         refreshTokenRepository.save(generatedRefresh.domainToken());
 
@@ -108,5 +110,13 @@ public class AuthService implements AuthUseCase {
                     activeRefreshToken.revoke();
                     refreshTokenRepository.save(activeRefreshToken);
                 });
+    }
+
+    @Override
+    public UserResult me(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
+
+        return authMapper.toResult(user);
     }
 }

@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.jwt;
 
-import com.streetdom.application.port.out.TokenService;
+import com.streetdom.application.port.out.TokenSigner;
 import com.streetdom.domain.exception.InvalidTokenException;
 import com.streetdom.domain.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
@@ -16,12 +16,12 @@ import java.util.Date;
 import java.util.UUID;
 
 @Component
-public class JwtTokenService implements TokenService {
+public class JwtTokenSigner implements TokenSigner {
 
     private final JwtConfigProperties jwtProperties;
     private final Key secretKey;
 
-    public JwtTokenService(JwtConfigProperties jwtProperties) {
+    public JwtTokenSigner(JwtConfigProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
         this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }

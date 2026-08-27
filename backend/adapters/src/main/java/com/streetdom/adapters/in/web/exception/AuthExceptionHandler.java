@@ -40,4 +40,11 @@ public class AuthExceptionHandler {
                 .body(new ErrorResponse("USER_ALREADY_EXISTS","User already exists"));
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserAuthenticated() {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("USER_UNAUTHENTICATED","User unauthenticated"));
+    }
+
 }

@@ -1,6 +1,5 @@
-package com.streetdom.adapters.out.persistence.repository;
+package com.streetdom.adapters.out.persistence;
 
-import com.streetdom.adapters.out.persistence.entity.UserEntity;
 import com.streetdom.adapters.out.persistence.jpa.UserJpaRepository;
 import com.streetdom.adapters.out.persistence.mapper.UserMapper;
 import com.streetdom.application.port.out.UserRepository;
@@ -11,23 +10,23 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepositoryAdapter implements UserRepository {
+public class UserPersistenceAdapter implements UserRepository {
 
-    private final UserJpaRepository jpa;
+    private final UserJpaRepository userJpaRepository;
     private final UserMapper userMapper;
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return jpa.findByUsername(username).map(userMapper::toDomain);
+        return userJpaRepository.findByUsername(username).map(userMapper::toDomain);
     }
 
     @Override
     public void save(User user) {
-        jpa.save(userMapper.toEntity(user));
+        userJpaRepository.save(userMapper.toEntity(user));
     }
 
     @Override
     public boolean existsByUsername(String username) {
-        return jpa.existsByUsername(username);
+        return userJpaRepository.existsByUsername(username);
     }
 }

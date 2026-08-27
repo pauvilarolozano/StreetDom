@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    public User toDomain(UserEntity userEntity) {
+    public User toDomain(UserEntity entity) {
         return User.builder()
-                .id(userEntity.getId())
-                .username(userEntity.getUsername())
-                .email(userEntity.getEmail())
-                .passwordHash(userEntity.getPasswordHash())
-                .role(userEntity.getRole())
+                .id(entity.getId())
+                .username(entity.getUsername())
+                .email(entity.getEmail())
+                .passwordHash(entity.getPasswordHash())
+                .role(entity.getRole())
                 .build();
     }
 

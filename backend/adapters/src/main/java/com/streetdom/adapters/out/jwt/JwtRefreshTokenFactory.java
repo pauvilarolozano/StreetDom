@@ -14,7 +14,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class JwtRefreshTokenFactory implements RefreshTokenFactory {
 
-    private final JwtTokenService jwtTokenService;
+    private final JwtTokenSigner jwtTokenSigner;
     private final JwtConfigProperties jwtConfigProperties;
     private final TokenHasher hasher;
 
@@ -34,8 +34,8 @@ public class JwtRefreshTokenFactory implements RefreshTokenFactory {
     }
 
     private RefreshTokenBundle generateBundle(User user, Instant sessionMaxUntil) {
-        String newTokenRaw = jwtTokenService.generateRefreshToken(user.getUsername());
-        Instant expiration = jwtTokenService.extractExpiration(newTokenRaw);
+        String newTokenRaw = jwtTokenSigner.generateRefreshToken(user.getUsername());
+        Instant expiration = jwtTokenSigner.extractExpiration(newTokenRaw);
 
         RefreshToken newToken = RefreshToken.builder()
                 .tokenHash(hasher.hash(newTokenRaw))

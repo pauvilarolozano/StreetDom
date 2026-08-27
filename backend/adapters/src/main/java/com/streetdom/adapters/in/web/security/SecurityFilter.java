@@ -1,6 +1,6 @@
 package com.streetdom.adapters.in.web.security;
 
-import com.streetdom.application.port.out.TokenService;
+import com.streetdom.application.port.out.TokenSigner;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-    private final TokenService tokenService;
+    private final TokenSigner tokenSigner;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -54,9 +54,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private void authenticate(String token) {
 
-        tokenService.validateAccessToken(token);
+        tokenSigner.validateAccessToken(token);
 
-        String username = tokenService.extractUsername(token);
+        String username = tokenSigner.extractUsername(token);
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

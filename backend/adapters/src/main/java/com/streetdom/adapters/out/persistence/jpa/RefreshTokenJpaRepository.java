@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RefreshTokenJpaRepository extends JpaRepository<RefreshTokenEntity, String> {
+
+    //TODO: al ser token el id creo que no es necesari el metodo, jpa ya implementa findById
     Optional<RefreshTokenEntity> findByTokenHash(String token);
 
     @Modifying

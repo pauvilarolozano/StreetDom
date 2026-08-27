@@ -2,7 +2,7 @@ package com.streetdom.application.port.out;
 
 import java.time.Instant;
 
-public interface TokenService {
+public interface TokenSigner {
     String generateAccessToken(String username, String email);
 
     String generateRefreshToken(String username);

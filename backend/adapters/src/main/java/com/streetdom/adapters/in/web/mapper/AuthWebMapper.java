@@ -2,13 +2,14 @@ package com.streetdom.adapters.in.web.mapper;
 
 import com.streetdom.adapters.in.web.request.LoginUserRequest;
 import com.streetdom.adapters.in.web.request.RegisterUserRequest;
-import com.streetdom.adapters.in.web.response.AuthResponse;
+import com.streetdom.adapters.in.web.response.AuthSessionResponse;
 import com.streetdom.adapters.in.web.response.TokensResponse;
 import com.streetdom.adapters.in.web.response.UserResponse;
 import com.streetdom.application.command.LoginUserCommand;
 import com.streetdom.application.command.RegisterUserCommand;
-import com.streetdom.application.port.in.result.AuthResult;
+import com.streetdom.application.port.in.result.SessionResult;
 import com.streetdom.application.port.in.result.TokensResult;
+import com.streetdom.application.port.in.result.UserResult;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,24 +28,24 @@ public class AuthWebMapper {
         return new LoginUserCommand(request.username(), request.password());
     }
 
-    public AuthResponse toResponse(AuthResult result) {
+    public AuthSessionResponse toResponse(SessionResult result) {
 
         // UserResponse can return more fields, but at the moment it is enough
-        UserResponse userInfo = UserResponse.builder()
-                .id(result.user().id())
-                .username(result.user().username())
-                .email(result.user().email())
+        UserResponse user = toResponse(result.user());
+        TokensResponse tokens = toResponse(result.tokens());
+
+        return new AuthSessionResponse(user, tokens);
+    }
+
+    public UserResponse toResponse(UserResult user) {
+        return UserResponse.builder()
+                .id(user.id())
+                .username(user.username())
+                .email(user.email())
                 .build();
-
-        TokensResponse tokensResponse = new TokensResponse(
-                result.tokens().accessToken(),
-                result.tokens().refreshToken());
-
-        return new AuthResponse(userInfo, tokensResponse);
     }
 
     public TokensResponse toResponse(TokensResult tokensResult) {
-
         return new TokensResponse(
                 tokensResult.accessToken(),
                 tokensResult.refreshToken());
