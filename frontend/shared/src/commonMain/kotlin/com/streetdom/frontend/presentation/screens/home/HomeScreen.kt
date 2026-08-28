@@ -2,11 +2,19 @@ package com.streetdom.frontend.presentation.screens.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionState
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import dev.icerock.moko.permissions.location.LOCATION
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -18,23 +26,191 @@ fun HomeScreen(
     onLogoutSuccess: () -> Unit = {}
 ) {
     val viewModel: HomeViewModel = koinViewModel()
-    
-    LaunchedEffect(Unit) {
+
+    val permissionsController = rememberPermissionsController()
+    val scope = rememberCoroutineScope()
+
+    var showLocationAccessDialog by remember { mutableStateOf(false) }
+    var showLocationBlockedDialog by remember { mutableStateOf(false) }
+
+    HandleHomeEvents(
+        viewModel = viewModel,
+        onLogoutSuccess = onLogoutSuccess
+    )
+
+    HomeContent(
+        uiState = viewModel.uiState,
+        onPlayClick = {
+            scope.launch {
+                handlePlayClick(
+                    permissionsController = permissionsController,
+                    onGranted = onNavigateToPlay,
+                    onNotGranted = { showLocationAccessDialog = true },
+                    onDeniedAlways = { showLocationBlockedDialog = true }
+                )
+            }
+        },
+        onRankingClick = onNavigateToRanking,
+        onInventoryClick = onNavigateToInventory,
+        onProfileClick = onNavigateToProfile,
+        onLogoutClick = viewModel::onLogoutClick
+    )
+
+    LocationAccessInfoDialog(
+        visible = showLocationAccessDialog,
+        onDismiss = { showLocationAccessDialog = false },
+        onContinue = {
+            showLocationAccessDialog = false
+
+            scope.launch {
+                requestLocationPermission(
+                    permissionsController = permissionsController,
+                    onGranted = onNavigateToPlay,
+                    onDeniedAlways = { showLocationBlockedDialog = true }
+                )
+            }
+        }
+    )
+
+    LocationPermissionBlockedDialog(
+        visible = showLocationBlockedDialog,
+        onDismiss = { showLocationBlockedDialog = false },
+        onOpenSettings = {
+            showLocationBlockedDialog = false
+            
+            scope.launch {
+                permissionsController.openAppSettings()
+            }
+        }
+    )
+}
+
+@Composable
+private fun rememberPermissionsController(): PermissionsController {
+    val factory = rememberPermissionsControllerFactory()
+
+    val permissionsController = remember(factory) {
+        factory.createPermissionsController()
+    }
+
+    BindEffect(permissionsController)
+
+    return permissionsController
+}
+
+private suspend fun handlePlayClick(
+    permissionsController: PermissionsController,
+    onGranted: () -> Unit,
+    onNotGranted: () -> Unit,
+    onDeniedAlways: () -> Unit
+) {
+    val status = permissionsController.getPermissionState(
+        Permission.LOCATION
+    )
+
+    when (status) {
+        PermissionState.Granted -> onGranted()
+        PermissionState.DeniedAlways -> onDeniedAlways()
+        else -> onNotGranted()
+    }
+}
+
+private suspend fun requestLocationPermission(
+    permissionsController: PermissionsController,
+    onGranted: () -> Unit,
+    onDeniedAlways: () -> Unit
+) {
+    try {
+        permissionsController.providePermission(
+            Permission.LOCATION
+        )
+
+        onGranted()
+
+    } catch (_: DeniedAlwaysException) {
+        onDeniedAlways()
+
+    } catch (_: DeniedException) {
+        // User denied the permission.
+        // Stay on Home.
+    }
+}
+
+@Composable
+private fun LocationAccessInfoDialog(
+    onDismiss: () -> Unit,
+    visible: Boolean,
+    onContinue: () -> Unit
+) {
+    if (!visible) return
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Location Required")
+        },
+        text = {
+            Text(
+                "StreetDom needs your location to play and conquer the streets."
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onContinue) {
+                Text("Continue")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+private fun LocationPermissionBlockedDialog(
+    visible: Boolean,
+    onDismiss: () -> Unit,
+    onOpenSettings: () -> Unit
+) {
+    if (!visible) return
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Permission Blocked")
+        },
+        text = {
+            Text(
+                "You have blocked location access. " +
+                        "Please enable it in the application settings."
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onOpenSettings) {
+                Text("Open Settings")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+private fun HandleHomeEvents(
+    viewModel: HomeViewModel,
+    onLogoutSuccess: () -> Unit
+) {
+    LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
                 HomeEvent.LogoutSuccess -> onLogoutSuccess()
             }
         }
     }
-    
-    HomeContent(
-        uiState = viewModel.uiState,
-        onPlayClick = onNavigateToPlay,
-        onRankingClick = onNavigateToRanking,
-        onInventoryClick = onNavigateToInventory,
-        onProfileClick = onNavigateToProfile,
-        onLogoutClick = viewModel::onLogoutClick
-    )
 }
 
 @Composable
@@ -49,7 +225,9 @@ fun HomeContent(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("StreetDom") },
+                title = {
+                    Text("StreetDom")
+                },
                 actions = {
                     IconButton(onClick = onLogoutClick) {
                         Text("🚪")
@@ -58,6 +236,7 @@ fun HomeContent(
             )
         }
     ) { paddingValues ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -71,16 +250,36 @@ fun HomeContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("👤", style = MaterialTheme.typography.titleMedium)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "👤",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(uiState.currentUser?.username ?: "Unknown", style = MaterialTheme.typography.titleMedium)
+
+                    Text(
+                        uiState.currentUser?.username ?: "Unknown",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
-                
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${uiState.coins}", style = MaterialTheme.typography.titleMedium)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "${uiState.coins}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("🪙", style = MaterialTheme.typography.titleMedium)
+
+                    Text(
+                        "🪙",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
 
@@ -93,10 +292,20 @@ fun HomeContent(
                     .height(120.dp),
                 shape = MaterialTheme.shapes.large
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("🗺️", style = MaterialTheme.typography.headlineLarge)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "🗺️",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text("JUGAR / PLAY", style = MaterialTheme.typography.headlineMedium)
+
+                    Text(
+                        "PLAY",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
                 }
             }
 
@@ -108,33 +317,53 @@ fun HomeContent(
             ) {
                 OutlinedButton(
                     onClick = onRankingClick,
-                    modifier = Modifier.weight(1f).height(80.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("🏆", style = MaterialTheme.typography.titleLarge)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "🏆",
+                            style = MaterialTheme.typography.titleLarge
+                        )
                         Text("Ranking")
                     }
                 }
 
                 OutlinedButton(
                     onClick = onInventoryClick,
-                    modifier = Modifier.weight(1f).height(80.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("🎒", style = MaterialTheme.typography.titleLarge)
-                        Text("Inventario")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "🎒",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text("Inventory")
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
-            // Perfil / Ajustes rápido
+
             TextButton(onClick = onProfileClick) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("⚙️", style = MaterialTheme.typography.titleMedium)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "⚙️",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Perfil / Ajustes")
+
+                    Text("Profile / Settings")
                 }
             }
         }

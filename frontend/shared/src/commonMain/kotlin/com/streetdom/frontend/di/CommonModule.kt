@@ -4,14 +4,16 @@ import com.streetdom.frontend.data.config.HttpClientFactory
 import com.streetdom.frontend.data.remote.AuthApi
 import com.streetdom.frontend.data.remote.KtorAuthApi
 import com.streetdom.frontend.data.repository.AuthRepositoryImpl
-import com.streetdom.frontend.data.repository.UserStorageImpl
-import com.streetdom.frontend.data.repository.TokensStorageImpl
+import com.streetdom.frontend.data.storage.UserStorageImpl
+import com.streetdom.frontend.data.storage.TokensStorageImpl
 import com.streetdom.frontend.domain.repository.AuthRepository
 import com.streetdom.frontend.domain.storage.TokensStorage
 import com.streetdom.frontend.domain.storage.UserStorage
 import com.streetdom.frontend.domain.useCase.AuthUseCase
+import com.streetdom.frontend.domain.useCase.LocationUseCase
 import com.streetdom.frontend.presentation.screens.home.HomeViewModel
 import com.streetdom.frontend.presentation.screens.login.LoginViewModel
+import com.streetdom.frontend.presentation.screens.play.PlayViewModel
 import com.streetdom.frontend.presentation.screens.register.RegisterViewModel
 import com.streetdom.frontend.presentation.screens.splash.SplashViewModel
 import io.ktor.client.HttpClient
@@ -51,6 +53,10 @@ val commonModule = module {
         AuthUseCase(get(),get(),get())
     }
 
+    factory {
+        LocationUseCase(get())
+    }
+
     factory <SplashViewModel> {
         SplashViewModel(get())
     }
@@ -65,6 +71,10 @@ val commonModule = module {
 
     factory <HomeViewModel> {
         HomeViewModel(get(),get())
+    }
+
+    factory <PlayViewModel> {
+        PlayViewModel(get())
     }
 
 }

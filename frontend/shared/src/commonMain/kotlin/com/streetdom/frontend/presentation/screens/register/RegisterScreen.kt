@@ -23,18 +23,9 @@ fun RegisterScreen (
     onRegisterSuccess: () -> Unit,
     onLoginClick: () -> Unit
 ) {
-
     val viewModel: RegisterViewModel = koinViewModel()
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                RegisterEvent.RegisterSuccess -> {
-                    onRegisterSuccess()
-                }
-            }
-        }
-    }
+    HandleRegisterEvents(viewModel, onRegisterSuccess)
 
     RegisterContent(
         uiState = viewModel.uiState,
@@ -45,6 +36,20 @@ fun RegisterScreen (
         onRegisterClick = viewModel::onRegisterClick,
         onLoginClick = onLoginClick
     )
+}
+
+@Composable
+private fun HandleRegisterEvents(
+    viewModel: RegisterViewModel,
+    onRegisterSuccess: () -> Unit
+) {
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                RegisterEvent.RegisterSuccess -> onRegisterSuccess()
+            }
+        }
+    }
 }
 
 @Composable

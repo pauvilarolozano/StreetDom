@@ -46,6 +46,8 @@ kotlin {
             implementation(libs.compose.uiTooling)
             implementation(libs.ktor.client.cio)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.play.services.location)
+            implementation(libs.kotlinx.coroutines.play.services)
         }
 
         iosMain.dependencies {
@@ -71,6 +73,9 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.auth)
             implementation(libs.maplibre.compose)
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.location)
+            implementation(libs.moko.permissions.compose)
         }
 
         commonTest.dependencies {

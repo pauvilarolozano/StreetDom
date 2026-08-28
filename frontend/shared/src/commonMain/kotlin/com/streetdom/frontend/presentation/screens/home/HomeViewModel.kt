@@ -45,10 +45,9 @@ class HomeViewModel(
                     currentUser = user,
                     isLoading = false
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 uiState = uiState.copy(
                     isLoading = false,
-                    //error = e.message
                 )
             }
         }

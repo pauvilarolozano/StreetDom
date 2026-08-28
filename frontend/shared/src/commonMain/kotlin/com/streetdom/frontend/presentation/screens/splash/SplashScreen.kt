@@ -7,35 +7,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SplashScreen(
     onAuthenticated: () -> Unit,
     onUnauthenticated: () -> Unit
 ) {
+    val viewModel: SplashViewModel = koinViewModel()
 
-    val viewModel:SplashViewModel = koinViewModel()
-
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                SplashEvent.Authenticated -> {
-                    onAuthenticated()
-                }
-                SplashEvent.Unauthenticated -> {
-                    onUnauthenticated()
-                }
-            }
-        }
-    }
+    HandleSplashEvents(viewModel, onAuthenticated, onUnauthenticated)
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text("StreetDom")
+    }
+}
+
+@Composable
+private fun HandleSplashEvents(
+    viewModel: SplashViewModel,
+    onAuthenticated: () -> Unit,
+    onUnauthenticated: () -> Unit
+) {
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                SplashEvent.Authenticated -> onAuthenticated()
+                SplashEvent.Unauthenticated -> onUnauthenticated()
+            }
+        }
     }
 }

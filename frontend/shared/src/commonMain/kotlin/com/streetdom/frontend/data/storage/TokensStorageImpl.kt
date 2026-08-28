@@ -1,4 +1,4 @@
-package com.streetdom.frontend.data.repository
+package com.streetdom.frontend.data.storage
 
 import com.streetdom.frontend.domain.storage.SecureStorage
 import com.streetdom.frontend.domain.model.Tokens

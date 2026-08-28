@@ -23,18 +23,9 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
-
     val viewModel: LoginViewModel = koinViewModel()
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                LoginEvent.LoginSuccess -> {
-                    onLoginSuccess()
-                }
-            }
-        }
-    }
+    HandleLoginEvents(viewModel, onLoginSuccess)
 
     LoginContent(
         uiState = viewModel.uiState,
@@ -43,6 +34,20 @@ fun LoginScreen(
         onLoginClick = viewModel::onLoginClick,
         onRegisterClick = onRegisterClick
     )
+}
+
+@Composable
+private fun HandleLoginEvents(
+    viewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit
+) {
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                LoginEvent.LoginSuccess -> onLoginSuccess()
+            }
+        }
+    }
 }
 
 @Composable
