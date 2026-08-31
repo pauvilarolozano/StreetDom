@@ -7,13 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.storage.UserStorage
 import com.streetdom.frontend.domain.useCase.AuthUseCase
+import com.streetdom.frontend.domain.useCase.LocationUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val userStorage: UserStorage,
-    private val authUseCase: AuthUseCase
+    private val authUseCase: AuthUseCase,
+    private val locationUseCase: LocationUseCase
 
 ) : ViewModel() {
     
@@ -25,6 +27,16 @@ class HomeViewModel(
 
     init {
         loadUser()
+    }
+
+    fun onPlayClick() {
+        viewModelScope.launch {
+            if (locationUseCase.isLocationEnabled()) {
+                _events.emit(HomeEvent.NavigateToPlay)
+            } else {
+                _events.emit(HomeEvent.LocationDisabled)
+            }
+        }
     }
 
     fun onLogoutClick() {

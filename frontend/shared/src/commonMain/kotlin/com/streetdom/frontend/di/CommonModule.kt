@@ -70,7 +70,7 @@ val commonModule = module {
     }
 
     factory <HomeViewModel> {
-        HomeViewModel(get(),get())
+        HomeViewModel(get(),get(),get())
     }
 
     factory <PlayViewModel> {

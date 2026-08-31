@@ -32,9 +32,12 @@ fun HomeScreen(
 
     var showLocationAccessDialog by remember { mutableStateOf(false) }
     var showLocationBlockedDialog by remember { mutableStateOf(false) }
+    var showLocationDisabledDialog by remember { mutableStateOf(false) }
 
     HandleHomeEvents(
         viewModel = viewModel,
+        onNavigateToPlay = onNavigateToPlay,
+        onLocationDisabled = { showLocationDisabledDialog = true },
         onLogoutSuccess = onLogoutSuccess
     )
 
@@ -44,7 +47,7 @@ fun HomeScreen(
             scope.launch {
                 handlePlayClick(
                     permissionsController = permissionsController,
-                    onGranted = onNavigateToPlay,
+                    onGranted = viewModel::onPlayClick,
                     onNotGranted = { showLocationAccessDialog = true },
                     onDeniedAlways = { showLocationBlockedDialog = true }
                 )
@@ -82,6 +85,11 @@ fun HomeScreen(
                 permissionsController.openAppSettings()
             }
         }
+    )
+
+    LocationDisabledDialog(
+        visible = showLocationDisabledDialog,
+        onDismiss = { showLocationDisabledDialog = false }
     )
 }
 
@@ -200,13 +208,44 @@ private fun LocationPermissionBlockedDialog(
 }
 
 @Composable
+private fun LocationDisabledDialog(
+    visible: Boolean,
+    onDismiss: () -> Unit
+) {
+    if (!visible) return
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Location Services Disabled")
+        },
+        text = {
+            Text(
+                "Your device's location services are turned off. " +
+                        "Please enable GPS to continue playing."
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
+}
+
+@Composable
 private fun HandleHomeEvents(
     viewModel: HomeViewModel,
-    onLogoutSuccess: () -> Unit
-) {
+    onNavigateToPlay: () -> Unit,
+    onLocationDisabled: () -> Unit,
+    onLogoutSuccess: () -> Unit,
+
+    ) {
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
+                HomeEvent.NavigateToPlay -> onNavigateToPlay()
+                HomeEvent.LocationDisabled -> onLocationDisabled()
                 HomeEvent.LogoutSuccess -> onLogoutSuccess()
             }
         }

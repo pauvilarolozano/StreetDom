@@ -7,8 +7,11 @@ class LocationUseCase(
     private val locationRepository: LocationRepository
 ) {
 
+    fun isLocationEnabled(): Boolean {
+        return locationRepository.isLocationEnabled()
+    }
+
     suspend fun getCurrentLocation(): Location? {
         return locationRepository.getCurrentLocation()
     }
-
 }
