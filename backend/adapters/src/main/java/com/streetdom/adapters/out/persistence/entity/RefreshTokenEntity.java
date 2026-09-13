@@ -21,7 +21,8 @@ public class RefreshTokenEntity {
     private Instant sessionMaxUntil;
     private boolean revoked;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
 }

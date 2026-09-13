@@ -16,18 +16,25 @@ import com.streetdom.frontend.presentation.screens.login.LoginViewModel
 import com.streetdom.frontend.presentation.screens.play.PlayViewModel
 import com.streetdom.frontend.presentation.screens.register.RegisterViewModel
 import com.streetdom.frontend.presentation.screens.splash.SplashViewModel
-import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val commonModule = module {
 
-    single <HttpClient> {
-        HttpClientFactory(get()).create()
+    single(named("authenticated")) {
+        HttpClientFactory(get()).createAuthenticated()
+    }
+
+    single(named("unauthenticated")) {
+        HttpClientFactory(get()).createUnauthenticated()
     }
 
     single <AuthApi> {
-        KtorAuthApi(get())
+        KtorAuthApi(
+            unauthenticatedClient = get(named("unauthenticated")),
+            authenticatedClient = get(named("authenticated"))
+        )
     }
 
     single<TokensStorage>{

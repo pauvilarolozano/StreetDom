@@ -2,8 +2,7 @@ package com.streetdom.application.service;
 
 import com.streetdom.application.port.in.ZoneUseCase;
 import com.streetdom.application.port.out.GeoLocationProvider;
-import com.streetdom.application.port.out.ZoneRepository;
-import com.streetdom.domain.model.Zone;
+import com.streetdom.domain.model.Location;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,7 @@ public class ZoneService implements ZoneUseCase {
 
     @Override
     public String getCell(double latitude, double longitude) {
-        return geoLocationProvider.getCell(latitude,longitude);
+        Location location = new Location(latitude,longitude);
+        return geoLocationProvider.getCell(location);
     }
 }

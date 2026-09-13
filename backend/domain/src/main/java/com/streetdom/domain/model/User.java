@@ -12,7 +12,7 @@ public class User {
     String email;
     String passwordHash;
     @Builder.Default
-    Role role = Role.USER;
+    UserRole userRole = UserRole.USER;
 
     public static User create(String username, String email, String passwordHash) {
         return User.builder()

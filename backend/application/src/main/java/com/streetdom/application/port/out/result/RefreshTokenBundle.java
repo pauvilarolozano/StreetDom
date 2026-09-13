@@ -6,5 +6,4 @@ public record RefreshTokenBundle(
         RefreshToken domainToken,
         String rawTokenValue
 
-) {
-}
+) {}

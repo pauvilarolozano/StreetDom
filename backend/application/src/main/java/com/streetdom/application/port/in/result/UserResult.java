@@ -5,5 +5,5 @@ import java.util.UUID;
 public record UserResult(
         UUID id,
         String username,
-        String email) {
-}
+        String email
+) {}

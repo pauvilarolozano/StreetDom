@@ -1,14 +1,10 @@
 package com.streetdom.domain.model;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 
-import java.util.UUID;
-
-@Value
 @Builder
+@Getter
 public class Zone {
-
-    UUID id;
-    String h3Index;
+    private String cellIndex;
 }

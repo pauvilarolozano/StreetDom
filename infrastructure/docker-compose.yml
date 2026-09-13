@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15
+    image: postgis/postgis:15-3.4
     container_name: streetdom-db
     restart: always
     environment:
@@ -17,24 +17,37 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${DATASOURCE_USER} -d ${DATASOURCE_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  valhalla:
+    image: ghcr.io/valhalla/valhalla:latest
+    container_name: streetdom-valhalla
+    volumes:
+      - ./valhalla:/data/valhalla
+    ports:
+      - "8002:8002"
+    command: >
+      valhalla_service
+      /data/valhalla/valhalla.json
 
   backend:
-    build: ./backend
+    build: ../backend
     container_name: streetdom-backend
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: ${DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${DATASOURCE_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
-
+      SPRING_PROFILES_ACTIVE: docker
+      DATASOURCE_URL: ${DATASOURCE_URL}
+      DATASOURCE_USERNAME: ${DATASOURCE_USER}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION}
       JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
       JWT_SESSION_MAX_EXPIRATION: ${JWT_SESSION_MAX_EXPIRATION}
+      VALHALLA_URL: ${VALHALLA_URL}
 
 volumes:
   postgres_data:

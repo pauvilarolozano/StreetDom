@@ -1,6 +1,7 @@
 package com.streetdom.adapters.out.geolocation;
 
 import com.streetdom.application.port.out.GeoLocationProvider;
+import com.streetdom.domain.model.Location;
 import com.uber.h3core.H3Core;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,10 @@ public class H3GeoLocationProvider implements GeoLocationProvider {
     private final H3Core h3;
 
     @Override
-    public String getCell(double latitude, double longitude) {
+    public String getCell(Location location) {
         return h3.latLngToCellAddress(
-                latitude,
-                longitude,
+                location.latitude(),
+                location.longitude(),
                 H3_RESOLUTION
         );
     }

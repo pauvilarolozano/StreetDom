@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.persistence.entity;
 
-import com.streetdom.domain.model.Role;
+import com.streetdom.domain.model.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +31,7 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private UserRole userRole;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

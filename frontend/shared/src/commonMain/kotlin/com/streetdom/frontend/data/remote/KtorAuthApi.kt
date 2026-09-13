@@ -13,12 +13,13 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 
-class KtorAuthApi (
-    private val httpClient: HttpClient,
+class KtorAuthApi(
+    private val unauthenticatedClient: HttpClient,
+    private val authenticatedClient: HttpClient
 ) : AuthApi {
 
     override suspend fun login(request: LoginRequest): AuthResponse {
-        val response = httpClient.post(ApiConfig.LOGIN_URL) {
+        val response = unauthenticatedClient.post(ApiConfig.LOGIN_URL) {
             setBody(request)
         }
 
@@ -26,31 +27,29 @@ class KtorAuthApi (
     }
 
     override suspend fun register(request: RegisterRequest): AuthResponse {
-        val response = httpClient.post(ApiConfig.REGISTER_URL) {
+        val response = unauthenticatedClient.post(ApiConfig.REGISTER_URL) {
             setBody(request)
         }
 
         return response.body()
     }
 
-
     override suspend fun logout(request: RefreshTokenRequest) {
-        httpClient.post(ApiConfig.LOGOUT_URL) {
+        authenticatedClient.post(ApiConfig.LOGOUT_URL) {
             setBody(request)
         }
     }
 
     override suspend fun refresh(request: RefreshTokenRequest): TokensResponse {
-        val response = httpClient.post(ApiConfig.REFRESH_URL) {
+        val response = unauthenticatedClient.post(ApiConfig.REFRESH_URL) {
             setBody(request)
         }
 
         return response.body()
     }
 
-
     override suspend fun me(): UserResponse {
-        val response = httpClient.get(ApiConfig.ME_URL)
+        val response = authenticatedClient.get(ApiConfig.ME_URL)
         return response.body()
     }
 }

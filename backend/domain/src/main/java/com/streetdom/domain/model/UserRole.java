@@ -1,6 +1,6 @@
 package com.streetdom.domain.model;
 
-public enum Role {
+public enum UserRole {
     USER,
     ADMIN
 }

@@ -22,17 +22,10 @@ import kotlinx.serialization.json.Json
 
 class HttpClientFactory(
     private val tokenStorage: TokensStorage
-){
+) {
 
-    //TODO: hacer metodo que devuelva el cliente para autorizado e instancia para no
-    fun create(): HttpClient {
+    fun createAuthenticated(): HttpClient {
         val refreshClient = createBaseClient()
-        return createAuthenticatedClient(refreshClient)
-    }
-
-    private fun createAuthenticatedClient(
-        refreshClient: HttpClient
-    ): HttpClient {
 
         return HttpClient {
             expectSuccess = true
@@ -80,8 +73,7 @@ class HttpClientFactory(
                             setBody(RefreshTokenRequest(refreshToken))
                         }
 
-                        val tokensResponse =
-                            response.body<TokensResponse>()
+                        val tokensResponse = response.body<TokensResponse>()
 
                         val tokens = Tokens(
                             accessToken = tokensResponse.accessToken,
@@ -100,10 +92,12 @@ class HttpClientFactory(
         }
     }
 
+    fun createUnauthenticated(): HttpClient {
+        return createBaseClient()
+    }
+
     private fun createBaseClient(): HttpClient {
-
         return HttpClient {
-
             expectSuccess = true
 
             install(ContentNegotiation) {

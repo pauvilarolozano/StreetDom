@@ -13,7 +13,7 @@ public class UserMapper {
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .passwordHash(entity.getPasswordHash())
-                .role(entity.getRole())
+                .userRole(entity.getUserRole())
                 .build();
     }
 
@@ -23,7 +23,7 @@ public class UserMapper {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .passwordHash(user.getPasswordHash())
-                .role(user.getRole())
+                .userRole(user.getUserRole())
                 .build();
     }
 }

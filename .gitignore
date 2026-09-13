@@ -1,0 +1,102 @@
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# =========================
+# Gradle / Kotlin
+# =========================
+.gradle/
+.kotlin/
+build/
+**/build/
+!src/**/build/
+
+# =========================
+# Android
+# =========================
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# =========================
+# Node
+# =========================
+node_modules/
+
+# =========================
+# macOS
+# =========================
+.DS_Store
+
+# =========================
+# Xcode / iOS
+# =========================
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/project.xcworkspace/
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# =========================
+# Java / Maven
+# =========================
+target/
+**/target/
+.mvn/wrapper/maven-wrapper.jar
+
+# =========================
+# Spring Tool Suite / Eclipse
+# =========================
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# =========================
+# NetBeans
+# =========================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Environment
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Infrastructure
+# =========================
+# Valhalla generated graph tiles
+infrastructure/valhalla/tiles/**
+!infrastructure/valhalla/tiles/.gitkeep
+
+# OSM data
+infrastructure/valhalla/osm/*.pbf
+
+# Vector tiles
+*.mvt
