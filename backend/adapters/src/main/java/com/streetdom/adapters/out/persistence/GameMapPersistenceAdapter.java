@@ -1,10 +1,9 @@
 package com.streetdom.adapters.out.persistence;
 
-import com.streetdom.adapters.out.persistence.entity.GameMapEntity;
 import com.streetdom.adapters.out.persistence.jpa.GameMapJpaRepository;
 import com.streetdom.adapters.out.persistence.mapper.GameMapMapper;
 import com.streetdom.application.port.out.GameMapRepository;
-import com.streetdom.domain.model.GameMap;
+import com.streetdom.domain.model.game.GameMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package com.streetdom.application.port.out;
 
-import com.streetdom.domain.model.Zone;
+import com.streetdom.domain.model.geography.Zone;
 
 import java.util.Optional;
 import java.util.UUID;

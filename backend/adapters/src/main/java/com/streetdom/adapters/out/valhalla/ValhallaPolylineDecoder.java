@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.valhalla;
 
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.Location;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

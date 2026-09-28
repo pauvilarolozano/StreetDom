@@ -2,7 +2,7 @@ package com.streetdom.application.service;
 
 import com.streetdom.application.port.in.ZoneUseCase;
 import com.streetdom.application.port.out.GeoLocationProvider;
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.Location;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

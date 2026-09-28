@@ -1,4 +1,4 @@
-package com.streetdom.domain.model;
+package com.streetdom.domain.model.identity;
 
 public enum UserRole {
     USER,

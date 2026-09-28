@@ -1,15 +1,13 @@
 package com.streetdom.application.service;
 
-import com.streetdom.application.command.MapMatchingCommand;
-import com.streetdom.application.port.in.result.MapMatchingResult;
 import com.streetdom.application.port.out.MapMatchingProvider;
 import com.streetdom.application.port.out.StreetNetworkRepository;
 import com.streetdom.application.port.out.result.ProviderMapMatchingResult;
 import com.streetdom.application.port.out.result.ProviderMatchedEdge;
-import com.streetdom.domain.model.Location;
-import com.streetdom.domain.model.RoutingEdge;
-import com.streetdom.domain.model.RoutingProvider;
-import com.streetdom.domain.model.StreetSegment;
+import com.streetdom.domain.model.geography.Location;
+import com.streetdom.domain.model.geography.RoutingEdge;
+import com.streetdom.domain.model.geography.RoutingProvider;
+import com.streetdom.domain.model.geography.StreetSegment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -79,16 +77,14 @@ class MapMatchingServiceTest {
                 List.of(edgeGeometry)
         )).thenReturn(List.of(streetSegment));
 
-        MapMatchingResult result =
-                mapMatchingService.match(
-                        new MapMatchingCommand(inputLocations)
-                );
+        List<StreetSegment> result =
+                mapMatchingService.match(inputLocations);
 
-        assertEquals(1, result.streetSegments().size());
+        assertEquals(1, result.size());
 
         assertEquals(
                 streetSegment.getId(),
-                result.streetSegments().getFirst().getId()
+                result.getFirst().getId()
         );
     }
 }

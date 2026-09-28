@@ -1,11 +1,9 @@
 package com.streetdom.adapters.out.persistence.mapper;
 
 import com.streetdom.adapters.out.persistence.entity.RoutingEdgeEntity;
-import com.streetdom.domain.model.RoutingEdge;
+import com.streetdom.domain.model.geography.RoutingEdge;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor

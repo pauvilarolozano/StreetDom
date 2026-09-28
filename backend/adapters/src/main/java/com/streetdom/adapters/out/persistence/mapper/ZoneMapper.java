@@ -1,7 +1,7 @@
 package com.streetdom.adapters.out.persistence.mapper;
 
 import com.streetdom.adapters.out.persistence.entity.ZoneEntity;
-import com.streetdom.domain.model.Zone;
+import com.streetdom.domain.model.geography.Zone;
 import org.springframework.stereotype.Component;
 
 @Component

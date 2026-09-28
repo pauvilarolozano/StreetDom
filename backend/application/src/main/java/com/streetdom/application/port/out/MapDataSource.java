@@ -1,8 +1,8 @@
 package com.streetdom.application.port.out;
 
 import com.streetdom.application.port.out.result.RoutingEdgeImportData;
-import com.streetdom.domain.model.GeographicBounds;
-import com.streetdom.domain.model.RoutingEdge;
+import com.streetdom.domain.model.geography.GeographicBounds;
+
 import java.util.List;
 
 public interface MapDataSource {

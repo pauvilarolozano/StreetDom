@@ -1,7 +1,7 @@
 package com.streetdom.adapters.out.persistence.mapper;
 
 import com.streetdom.adapters.out.persistence.entity.UserEntity;
-import com.streetdom.domain.model.User;
+import com.streetdom.domain.model.identity.User;
 import org.springframework.stereotype.Component;
 
 @Component

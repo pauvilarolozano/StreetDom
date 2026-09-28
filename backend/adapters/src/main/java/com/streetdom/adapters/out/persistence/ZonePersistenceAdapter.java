@@ -3,7 +3,7 @@ package com.streetdom.adapters.out.persistence;
 import com.streetdom.adapters.out.persistence.jpa.ZoneJpaRepository;
 import com.streetdom.adapters.out.persistence.mapper.ZoneMapper;
 import com.streetdom.application.port.out.ZoneRepository;
-import com.streetdom.domain.model.Zone;
+import com.streetdom.domain.model.geography.Zone;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

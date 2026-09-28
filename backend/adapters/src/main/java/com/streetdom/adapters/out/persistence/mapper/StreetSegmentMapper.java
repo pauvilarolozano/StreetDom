@@ -2,8 +2,8 @@ package com.streetdom.adapters.out.persistence.mapper;
 
 import com.streetdom.adapters.out.persistence.entity.RoutingEdgeEntity;
 import com.streetdom.adapters.out.persistence.entity.StreetSegmentEntity;
-import com.streetdom.domain.model.RoutingEdge;
-import com.streetdom.domain.model.StreetSegment;
+import com.streetdom.domain.model.geography.RoutingEdge;
+import com.streetdom.domain.model.geography.StreetSegment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

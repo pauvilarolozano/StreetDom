@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.persistence.entity;
 
-import com.streetdom.domain.model.StreetSegmentState;
+import com.streetdom.domain.model.game.StreetSegmentState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

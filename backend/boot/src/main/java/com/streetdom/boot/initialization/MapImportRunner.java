@@ -1,8 +1,8 @@
 package com.streetdom.boot.initialization;
 
 import com.streetdom.application.port.in.MapImportUseCase;
-import com.streetdom.domain.model.GeographicBounds;
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.GeographicBounds;
+import com.streetdom.domain.model.geography.Location;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

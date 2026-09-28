@@ -3,10 +3,12 @@ package com.streetdom.adapters.out.jwt;
 import com.streetdom.application.port.out.RefreshTokenFactory;
 import com.streetdom.application.port.out.TokenHasher;
 import com.streetdom.application.port.out.result.RefreshTokenBundle;
-import com.streetdom.domain.model.RefreshToken;
-import com.streetdom.domain.model.User;
+import com.streetdom.domain.model.identity.RefreshToken;
+import com.streetdom.domain.model.identity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -17,12 +19,12 @@ public class JwtRefreshTokenFactory implements RefreshTokenFactory {
     private final JwtTokenSigner jwtTokenSigner;
     private final JwtConfigProperties jwtConfigProperties;
     private final TokenHasher hasher;
+    private final Clock clock;
 
     @Override
     public RefreshTokenBundle create(User user) {
-        // TODO: (Clean Code/Testing) no depender del reloj estático del sistema (Instant.now)
 
-        Instant sessionMaxExpiration = Instant.now()
+        Instant sessionMaxExpiration = clock.instant()
                 .plus(Duration.ofMillis(jwtConfigProperties.getSessionMaxExpiration()));
 
         return generateBundle(user, sessionMaxExpiration);

@@ -8,5 +8,5 @@ import java.util.List;
 public record MapMatchingRequest(
         @NotEmpty
         @Size(min = 2)
-        List<LocationRequest> locations
+        List<GpsPositionRequest> locations
 ) {}

@@ -1,7 +1,7 @@
 package com.streetdom.adapters.out.persistence.jpa;
 
 import com.streetdom.adapters.out.persistence.entity.RoutingEdgeEntity;
-import com.streetdom.domain.model.RoutingProvider;
+import com.streetdom.domain.model.geography.RoutingProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

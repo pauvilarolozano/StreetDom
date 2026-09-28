@@ -4,7 +4,7 @@ import com.streetdom.application.port.in.MapImportUseCase;
 import com.streetdom.application.port.out.MapDataSource;
 import com.streetdom.application.port.out.StreetNetworkRepository;
 import com.streetdom.application.port.out.result.RoutingEdgeImportData;
-import com.streetdom.domain.model.*;
+import com.streetdom.domain.model.geography.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.*;

@@ -4,11 +4,10 @@ import com.streetdom.adapters.out.valhalla.model.ValhallaEdgeData;
 import com.streetdom.adapters.out.valhalla.mapper.ValhallaRoutingEdgeImportMapper;
 import com.streetdom.application.port.out.MapDataSource;
 import com.streetdom.application.port.out.result.RoutingEdgeImportData;
-import com.streetdom.domain.model.GeographicBounds;
+import com.streetdom.domain.model.geography.GeographicBounds;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;

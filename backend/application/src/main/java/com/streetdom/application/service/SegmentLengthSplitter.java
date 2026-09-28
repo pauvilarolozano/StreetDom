@@ -1,12 +1,14 @@
 package com.streetdom.application.service;
 
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.Location;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class SegmentLengthSplitter {
 

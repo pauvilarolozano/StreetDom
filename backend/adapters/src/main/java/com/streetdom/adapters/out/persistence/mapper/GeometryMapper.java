@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.persistence.mapper;
 
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.Location;
 import org.locationtech.jts.geom.*;
 import org.springframework.stereotype.Component;
 

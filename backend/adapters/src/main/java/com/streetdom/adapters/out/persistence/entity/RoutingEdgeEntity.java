@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.persistence.entity;
 
-import com.streetdom.domain.model.RoutingProvider;
+import com.streetdom.domain.model.geography.RoutingProvider;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.domain.Persistable;

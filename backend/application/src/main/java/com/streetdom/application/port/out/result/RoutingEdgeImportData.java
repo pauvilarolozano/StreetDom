@@ -1,8 +1,7 @@
 package com.streetdom.application.port.out.result;
 
-import com.streetdom.domain.model.Location;
-import com.streetdom.domain.model.RoutingEdge;
-import com.streetdom.domain.model.RoutingProvider;
+import com.streetdom.domain.model.geography.Location;
+import com.streetdom.domain.model.geography.RoutingProvider;
 import lombok.Builder;
 import java.util.List;
 

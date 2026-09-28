@@ -1,15 +1,12 @@
 package com.streetdom.boot.test;
 
-import com.streetdom.application.command.MapMatchingCommand;
-import com.streetdom.application.port.in.MapMatchingUseCase;
-import com.streetdom.application.port.in.result.MapMatchingResult;
-import com.streetdom.domain.model.Location;
-import com.streetdom.domain.model.StreetSegment;
+import com.streetdom.application.service.MapMatchingService;
+import com.streetdom.domain.model.geography.Location;
+import com.streetdom.domain.model.geography.StreetSegment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MapMatchingServiceIT {
 
     @Autowired
-    private MapMatchingUseCase mapMatchingUseCase;
+    private MapMatchingService mapMatchingService;
 
     @Test
     void shouldMatchRouteThroughBarcelonaWithTurnsAndGpsNoise() {
@@ -42,27 +39,20 @@ class MapMatchingServiceIT {
                 new Location(41.40486, 2.17275)
         );
 
-        MapMatchingResult result =
-                mapMatchingUseCase.match(
-                        new MapMatchingCommand(locations)
-                );
+        List<StreetSegment> result =
+                mapMatchingService.match(locations);
 
         assertNotNull(result);
-
-        List<StreetSegment> segments =
-                result.streetSegments();
-
-        assertNotNull(segments);
-        assertFalse(segments.isEmpty());
+        assertFalse(result.isEmpty());
 
         assertTrue(
-                segments.size() > 3,
+                result.size() > 3,
                 "Expected several matched street segments"
         );
 
         Set<UUID> uniqueIds = new HashSet<>();
 
-        for (StreetSegment segment : segments) {
+        for (StreetSegment segment : result) {
 
             assertNotNull(segment);
             assertNotNull(segment.getId());
@@ -87,25 +77,18 @@ class MapMatchingServiceIT {
                 new Location(41.40118, 2.17004)
         );
 
-        MapMatchingResult result =
-                mapMatchingUseCase.match(
-                        new MapMatchingCommand(locations)
-                );
+        List<StreetSegment> result =
+                mapMatchingService.match(locations);
 
         assertNotNull(result);
-
-        List<StreetSegment> segments =
-                result.streetSegments();
-
-        assertNotNull(segments);
-        assertFalse(segments.isEmpty());
+        assertFalse(result.isEmpty());
 
         System.out.println(
                 "Short route matched StreetSegments: "
-                        + segments.size()
+                        + result.size()
         );
 
-        for (StreetSegment segment : segments) {
+        for (StreetSegment segment : result) {
             System.out.println(
                     "Segment "
                             + segment.getId()
@@ -120,12 +103,12 @@ class MapMatchingServiceIT {
         }
 
         Set<UUID> uniqueIds =
-                segments.stream()
+                result.stream()
                         .map(StreetSegment::getId)
                         .collect(Collectors.toSet());
 
         assertEquals(
-                segments.size(),
+                result.size(),
                 uniqueIds.size(),
                 "There should be no duplicate StreetSegments"
         );

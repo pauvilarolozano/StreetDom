@@ -3,7 +3,7 @@ package com.streetdom.adapters.out.persistence;
 import com.streetdom.adapters.out.persistence.jpa.UserJpaRepository;
 import com.streetdom.adapters.out.persistence.mapper.UserMapper;
 import com.streetdom.application.port.out.UserRepository;
-import com.streetdom.domain.model.User;
+import com.streetdom.domain.model.identity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;

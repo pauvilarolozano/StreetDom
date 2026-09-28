@@ -1,4 +1,4 @@
-package com.streetdom.domain.model;
+package com.streetdom.domain.model.geography;
 
 public record GeographicBounds (
         Location southWest,

@@ -1,8 +1,8 @@
 package com.streetdom.application.port.out;
 
 import com.streetdom.application.port.out.result.RefreshTokenBundle;
-import com.streetdom.domain.model.RefreshToken;
-import com.streetdom.domain.model.User;
+import com.streetdom.domain.model.identity.RefreshToken;
+import com.streetdom.domain.model.identity.User;
 
 public interface RefreshTokenFactory {
 

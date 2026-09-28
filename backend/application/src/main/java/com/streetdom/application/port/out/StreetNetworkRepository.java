@@ -1,9 +1,9 @@
 package com.streetdom.application.port.out;
 
-import com.streetdom.domain.model.Location;
-import com.streetdom.domain.model.RoutingEdge;
-import com.streetdom.domain.model.RoutingProvider;
-import com.streetdom.domain.model.StreetSegment;
+import com.streetdom.domain.model.geography.Location;
+import com.streetdom.domain.model.geography.RoutingEdge;
+import com.streetdom.domain.model.geography.RoutingProvider;
+import com.streetdom.domain.model.geography.StreetSegment;
 
 import java.util.Collection;
 import java.util.List;

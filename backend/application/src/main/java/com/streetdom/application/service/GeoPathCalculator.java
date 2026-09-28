@@ -1,11 +1,12 @@
 package com.streetdom.application.service;
 
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.Location;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class GeoPathCalculator {
 
     private static final double EARTH_RADIUS_METERS = 6_371_000;

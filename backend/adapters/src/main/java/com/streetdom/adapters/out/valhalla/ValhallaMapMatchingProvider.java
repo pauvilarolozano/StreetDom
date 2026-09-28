@@ -6,7 +6,7 @@ import com.streetdom.adapters.out.valhalla.dto.ValhallaTraceResponse;
 import com.streetdom.adapters.out.valhalla.mapper.ValhallaMapMatchingMapper;
 import com.streetdom.application.port.out.MapMatchingProvider;
 import com.streetdom.application.port.out.result.ProviderMapMatchingResult;
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.Location;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;

@@ -8,16 +8,18 @@ import com.streetdom.domain.exception.RefreshTokenNotFoundException;
 import com.streetdom.domain.exception.UserAlreadyExistsException;
 import com.streetdom.application.mapper.AuthServiceMapper;
 import com.streetdom.domain.exception.UserNotFoundException;
-import com.streetdom.domain.model.RefreshToken;
+import com.streetdom.domain.model.identity.RefreshToken;
 import com.streetdom.application.command.LoginUserCommand;
 import com.streetdom.application.command.RegisterUserCommand;
 import com.streetdom.application.port.in.result.SessionResult;
-import com.streetdom.domain.model.User;
+import com.streetdom.domain.model.identity.User;
 import com.streetdom.application.port.in.result.TokensResult;
 import com.streetdom.application.port.in.AuthUseCase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.Clock;
 import java.time.Instant;
 
 @Service
@@ -31,6 +33,7 @@ public class AuthService implements AuthUseCase {
     private final TokenHasher tokenHasher;
     private final PasswordHasher passwordHasher;
     private final AuthServiceMapper authMapper;
+    private final Clock clock;
 
     @Override
     @Transactional
@@ -80,11 +83,10 @@ public class AuthService implements AuthUseCase {
 
         tokenSigner.validateRefreshToken(refreshToken);
         String refreshTokenHash = tokenHasher.hash(refreshToken);
-
         RefreshToken storedRefreshToken = refreshTokenRepository.findByTokenHash(refreshTokenHash)
                 .orElseThrow(RefreshTokenNotFoundException::new);
 
-        storedRefreshToken.validate(Instant.now());
+        storedRefreshToken.validate(clock.instant());
         storedRefreshToken.revoke();
         refreshTokenRepository.save(storedRefreshToken);
 

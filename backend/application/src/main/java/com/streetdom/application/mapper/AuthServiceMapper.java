@@ -1,6 +1,6 @@
 package com.streetdom.application.mapper;
 
-import com.streetdom.domain.model.User;
+import com.streetdom.domain.model.identity.User;
 import com.streetdom.application.port.in.result.SessionResult;
 import com.streetdom.application.port.in.result.UserResult;
 import com.streetdom.application.port.in.result.TokensResult;

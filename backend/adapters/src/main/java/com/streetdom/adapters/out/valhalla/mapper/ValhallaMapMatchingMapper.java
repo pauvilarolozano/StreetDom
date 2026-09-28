@@ -5,8 +5,8 @@ import com.streetdom.adapters.out.valhalla.dto.ValhallaMatchedEdgeResponse;
 import com.streetdom.adapters.out.valhalla.dto.ValhallaTraceResponse;
 import com.streetdom.application.port.out.result.ProviderMapMatchingResult;
 import com.streetdom.application.port.out.result.ProviderMatchedEdge;
-import com.streetdom.domain.model.Location;
-import com.streetdom.domain.model.RoutingProvider;
+import com.streetdom.domain.model.geography.Location;
+import com.streetdom.domain.model.geography.RoutingProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

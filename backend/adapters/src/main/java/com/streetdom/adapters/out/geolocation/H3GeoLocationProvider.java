@@ -1,7 +1,7 @@
 package com.streetdom.adapters.out.geolocation;
 
 import com.streetdom.application.port.out.GeoLocationProvider;
-import com.streetdom.domain.model.Location;
+import com.streetdom.domain.model.geography.Location;
 import com.uber.h3core.H3Core;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -2,13 +2,11 @@ package com.streetdom.adapters.out.valhalla.mapper;
 
 import com.streetdom.adapters.out.valhalla.model.ValhallaEdgeData;
 import com.streetdom.application.port.out.result.RoutingEdgeImportData;
-import com.streetdom.domain.model.Location;
-import com.streetdom.domain.model.RoutingEdge;
-import com.streetdom.domain.model.RoutingProvider;
+import com.streetdom.domain.model.geography.Location;
+import com.streetdom.domain.model.geography.RoutingProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class ValhallaRoutingEdgeImportMapper {

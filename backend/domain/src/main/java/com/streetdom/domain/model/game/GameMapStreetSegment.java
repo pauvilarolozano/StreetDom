@@ -1,5 +1,6 @@
-package com.streetdom.domain.model;
+package com.streetdom.domain.model.game;
 
+import com.streetdom.domain.model.geography.StreetSegment;
 import lombok.Builder;
 import lombok.Value;
 

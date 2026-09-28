@@ -1,6 +1,6 @@
 package com.streetdom.application.port.out;
 
-import com.streetdom.domain.model.User;
+import com.streetdom.domain.model.identity.User;
 import java.util.Optional;
 
 public interface UserRepository {

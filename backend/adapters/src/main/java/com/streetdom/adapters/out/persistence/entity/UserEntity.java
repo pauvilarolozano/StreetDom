@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.persistence.entity;
 
-import com.streetdom.domain.model.UserRole;
+import com.streetdom.domain.model.identity.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

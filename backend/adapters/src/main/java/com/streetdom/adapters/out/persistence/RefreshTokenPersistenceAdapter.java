@@ -3,7 +3,7 @@ package com.streetdom.adapters.out.persistence;
 import com.streetdom.adapters.out.persistence.jpa.RefreshTokenJpaRepository;
 import com.streetdom.adapters.out.persistence.mapper.RefreshTokenMapper;
 import com.streetdom.application.port.out.RefreshTokenRepository;
-import com.streetdom.domain.model.RefreshToken;
+import com.streetdom.domain.model.identity.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
