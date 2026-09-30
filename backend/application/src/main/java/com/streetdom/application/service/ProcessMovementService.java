@@ -38,7 +38,5 @@ public class ProcessMovementService  implements ProcessMovementUseCase {
                         .toList();
 
         return List.of();
-
-
     }
 }

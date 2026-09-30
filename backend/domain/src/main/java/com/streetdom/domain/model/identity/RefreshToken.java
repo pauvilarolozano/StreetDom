@@ -32,9 +32,7 @@ public class RefreshToken {
         this.revoked = revoked;
 
         if (tokenHash.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Token hash cannot be blank"
-            );
+            throw new IllegalArgumentException("Token hash cannot be blank");
         }
     }
 

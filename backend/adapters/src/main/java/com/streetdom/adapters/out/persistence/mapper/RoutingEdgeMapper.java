@@ -11,9 +11,9 @@ public class RoutingEdgeMapper {
 
     public RoutingEdgeEntity toEntity(RoutingEdge routingEdge) {
         return RoutingEdgeEntity.builder()
-                .id(routingEdge.getId())
-                .provider(routingEdge.getProvider())
-                .externalId(routingEdge.getExternalId())
+                .id(routingEdge.id())
+                .provider(routingEdge.provider())
+                .externalId(routingEdge.externalId())
                 .build();
     }
 

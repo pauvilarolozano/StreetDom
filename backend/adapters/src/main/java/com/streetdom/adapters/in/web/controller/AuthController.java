@@ -51,13 +51,13 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody RefreshTokenRequest refreshToken) {
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest refreshToken) {
         authUseCase.logout(refreshToken.token());
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokensResponse> refresh(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<TokensResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
 
         TokensResult result = authUseCase.refresh(request.token());
         TokensResponse response = mapper.toResponse(result);

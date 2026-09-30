@@ -39,7 +39,7 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
 
         for (RoutingEdge routingEdge : routingEdges) {
             RoutingEdgeEntity entity = routingEdgeMapper.toEntity(routingEdge);
-            routingEdgesEntitiesById.put(routingEdge.getId(), entity);
+            routingEdgesEntitiesById.put(routingEdge.id(), entity);
         }
 
         routingEdgeJpaRepository.saveAll(routingEdgesEntitiesById.values());
@@ -49,7 +49,7 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
                         .map(streetSegment ->
                              streetSegmentMapper.toEntity(
                                     streetSegment,
-                                    routingEdgesEntitiesById.get(streetSegment.getRoutingEdge().getId())
+                                    routingEdgesEntitiesById.get(streetSegment.getRoutingEdge().id())
                              )
                         ).toList();
 

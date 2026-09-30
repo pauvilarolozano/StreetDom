@@ -1,5 +1,8 @@
 package com.streetdom.adapters.in.web.request;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record RefreshTokenRequest(
+        @NotBlank
         String token
 ) {}

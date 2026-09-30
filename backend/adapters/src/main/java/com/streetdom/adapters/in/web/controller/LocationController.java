@@ -30,11 +30,7 @@ public class LocationController {
 
         SecurityUser user = (SecurityUser) authentication.getPrincipal();
 
-        ProcessMovementCommand command =
-                processMovementWebMapper.toCommand(
-                        request,
-                        user.getId()
-                );
+        ProcessMovementCommand command = processMovementWebMapper.toCommand(request,user.getId());
 
         processMovementUseCase.process(command);
 
