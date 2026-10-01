@@ -25,8 +25,8 @@ public class RoutingEdgeEntity implements Persistable<UUID> {
     @Id
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false)
+    @Enumerated(EnumType.STRING)
     private RoutingProvider provider;
 
     @Column(name = "external_id", nullable = false)

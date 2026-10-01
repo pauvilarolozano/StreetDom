@@ -17,8 +17,14 @@ public class RefreshTokenEntity {
 
     @Id
     private String tokenHash;
+
+    @Column(nullable = false)
     private Instant expiresAt;
+
+    @Column(nullable = false)
     private Instant sessionMaxUntil;
+
+    @Column(nullable = false)
     private boolean revoked;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

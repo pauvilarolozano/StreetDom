@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.LineString;
 import org.springframework.data.domain.Persistable;
-
 import java.util.UUID;
 
 @Entity
