@@ -1,13 +1,14 @@
 package com.streetdom.application.service;
 
-import com.streetdom.application.port.out.MapMatchingProvider;
-import com.streetdom.application.port.out.StreetNetworkRepository;
-import com.streetdom.application.port.out.result.ProviderMapMatchingResult;
-import com.streetdom.application.port.out.result.ProviderMatchedEdge;
+import com.streetdom.application.streetnetwork.matching.MapMatchingService;
+import com.streetdom.application.port.out.streetnetwork.matching.MapMatchingProvider;
+import com.streetdom.application.port.out.streetnetwork.StreetNetworkRepository;
+import com.streetdom.application.port.out.streetnetwork.matching.ProviderMapMatchingResult;
+import com.streetdom.application.port.out.streetnetwork.matching.ProviderMatchedEdge;
 import com.streetdom.domain.model.geography.Location;
-import com.streetdom.domain.model.geography.RoutingEdge;
-import com.streetdom.domain.model.geography.RoutingProvider;
-import com.streetdom.domain.model.geography.StreetSegment;
+import com.streetdom.domain.model.streetnetwork.RoutingEdge;
+import com.streetdom.domain.model.streetnetwork.RoutingProvider;
+import com.streetdom.domain.model.streetnetwork.StreetSegment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

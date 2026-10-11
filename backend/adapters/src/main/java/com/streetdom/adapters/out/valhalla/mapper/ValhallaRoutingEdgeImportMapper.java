@@ -1,9 +1,9 @@
 package com.streetdom.adapters.out.valhalla.mapper;
 
 import com.streetdom.adapters.out.valhalla.model.ValhallaEdgeData;
-import com.streetdom.application.port.out.result.RoutingEdgeImportData;
+import com.streetdom.application.port.out.streetnetwork.loading.RoutingEdgeImportData;
 import com.streetdom.domain.model.geography.Location;
-import com.streetdom.domain.model.geography.RoutingProvider;
+import com.streetdom.domain.model.streetnetwork.RoutingProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

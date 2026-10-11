@@ -1,0 +1,17 @@
+package com.streetdom.application.port.out.auth;
+
+import java.time.Instant;
+
+public interface TokenSigner {
+    String generateAccessToken(String username, String email);
+
+    String generateRefreshToken(String username);
+
+    String extractUsername(String token);
+
+    Instant extractExpiration(String token);
+
+    void validateAccessToken(String token);
+
+    void validateRefreshToken(String token);
+}

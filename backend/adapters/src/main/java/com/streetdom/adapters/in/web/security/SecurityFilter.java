@@ -1,6 +1,6 @@
 package com.streetdom.adapters.in.web.security;
 
-import com.streetdom.application.port.out.TokenSigner;
+import com.streetdom.application.port.out.auth.TokenSigner;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

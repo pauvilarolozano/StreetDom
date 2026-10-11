@@ -1,7 +1,7 @@
 package com.streetdom.adapters.in.web.security;
 
-import com.streetdom.application.port.out.UserRepository;
-import com.streetdom.domain.model.identity.User;
+import com.streetdom.application.port.out.auth.UserRepository;
+import com.streetdom.domain.model.auth.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

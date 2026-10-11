@@ -4,20 +4,12 @@ import java.time.Instant;
 import java.util.Objects;
 
 public record GpsPosition(
-        double latitude,
-        double longitude,
+        Location location,
         Instant recordedAt,
         Double accuracyMeters
 ) {
     public GpsPosition {
-        if (latitude < -90 || latitude > 90) {
-            throw new IllegalArgumentException("Invalid latitude");
-        }
-
-        if (longitude < -180 || longitude > 180) {
-            throw new IllegalArgumentException("Invalid longitude");
-        }
-
+        Objects.requireNonNull(location);
         Objects.requireNonNull(recordedAt);
 
         if (accuracyMeters != null && accuracyMeters < 0) {

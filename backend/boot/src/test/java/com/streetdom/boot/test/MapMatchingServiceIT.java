@@ -1,8 +1,8 @@
 package com.streetdom.boot.test;
 
-import com.streetdom.application.service.MapMatchingService;
+import com.streetdom.application.streetnetwork.matching.MapMatchingService;
 import com.streetdom.domain.model.geography.Location;
-import com.streetdom.domain.model.geography.StreetSegment;
+import com.streetdom.domain.model.streetnetwork.StreetSegment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

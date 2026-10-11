@@ -1,6 +1,6 @@
 package com.streetdom.adapters.in.web.security;
 
-import com.streetdom.domain.model.identity.User;
+import com.streetdom.domain.model.auth.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

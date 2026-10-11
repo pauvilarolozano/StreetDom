@@ -65,15 +65,21 @@ CREATE TABLE game (
     started_at TIMESTAMP WITH TIME ZONE,
     finished_at TIMESTAMP WITH TIME ZONE,
 
-    CONSTRAINT fk_game_game_map FOREIGN KEY (game_map_id) REFERENCES game_map(id)
+    CONSTRAINT fk_game_game_map FOREIGN KEY (game_map_id) REFERENCES game_map(id),
+    CONSTRAINT uk_game_game_map UNIQUE (game_map_id)
 );
 
 CREATE TABLE player (
     user_id UUID NOT NULL,
     game_id UUID NOT NULL,
+    joined_at TIMESTAMP WITH TIME ZONE NOT NULL,
     role VARCHAR(50) NOT NULL,
 
     CONSTRAINT pk_player PRIMARY KEY (user_id, game_id),
     CONSTRAINT fk_player_user FOREIGN KEY (user_id) REFERENCES auth_user(id),
     CONSTRAINT fk_player_game FOREIGN KEY (game_id) REFERENCES game(id)
 );
+
+CREATE INDEX idx_player_game_id
+    ON player(game_id);
+
