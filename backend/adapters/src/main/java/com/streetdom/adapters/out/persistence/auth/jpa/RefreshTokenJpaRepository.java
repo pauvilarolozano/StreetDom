@@ -1,0 +1,25 @@
+package com.streetdom.adapters.out.persistence.auth.jpa;
+
+import com.streetdom.adapters.out.persistence.auth.entities.RefreshTokenEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface RefreshTokenJpaRepository extends JpaRepository<RefreshTokenEntity, String> {
+
+    //TODO: al ser token el gameId creo que no es necesari el metodo, jpa ya implementa findById
+    Optional<RefreshTokenEntity> findByTokenHash(String token);
+
+    @Modifying
+    @Transactional
+    @Query("""
+                UPDATE RefreshTokenEntity r
+                SET r.revoked = true
+                WHERE r.user.id = :userId
+            """)
+    void revokeAllByUserId(UUID userId);
+}

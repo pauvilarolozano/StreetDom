@@ -1,5 +1,8 @@
 package com.streetdom.adapters.out.persistence.game;
 
+import com.streetdom.adapters.out.persistence.game.entities.PlayerEntity;
+import com.streetdom.adapters.out.persistence.game.jpa.PlayerJpaRepository;
+import com.streetdom.adapters.out.persistence.game.mapper.PlayerMapper;
 import com.streetdom.application.port.out.game.PlayerRepository;
 import com.streetdom.domain.model.game.Player;
 import lombok.RequiredArgsConstructor;

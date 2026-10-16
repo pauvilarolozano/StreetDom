@@ -49,5 +49,11 @@ services:
       JWT_SESSION_MAX_EXPIRATION: ${JWT_SESSION_MAX_EXPIRATION}
       VALHALLA_URL: ${VALHALLA_URL}
 
+    redis:
+      image: redis:8-alpine
+      container_name: streetdom-redis
+      ports:
+        - "6379:6379"
+
 volumes:
   postgres_data:

@@ -1,5 +1,6 @@
 package com.streetdom.application.port.out.streetnetwork;
 
+import com.streetdom.domain.model.geography.GeographicArea;
 import com.streetdom.domain.model.geography.Location;
 import com.streetdom.domain.model.streetnetwork.RoutingEdge;
 import com.streetdom.domain.model.streetnetwork.RoutingProvider;
@@ -22,13 +23,19 @@ public interface StreetNetworkRepository {
             String externalId
     );
 
-    List<StreetSegment> findStreetSegmentsWithinDistance(
+    List<StreetSegment> findStreetSegmentsNearEdges(
             List<List<Location>> edgeGeometries
     );
 
-    Set<String> findExistingExternalIds(
+    Set<String> findExistingRoutingEdgeIds(
             RoutingProvider provider,
             Collection<String> externalIds
     );
+
+    List<StreetSegment> findStreetSegmentsInArea(
+            GeographicArea area
+    );
+
+
 
 }

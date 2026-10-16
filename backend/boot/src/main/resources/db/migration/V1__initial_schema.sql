@@ -44,8 +44,7 @@ CREATE INDEX idx_street_segment_geography
     USING GIST ((geometry::geography));
 
 CREATE TABLE game_map (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    id UUID PRIMARY KEY
 );
 
 CREATE TABLE game_map_street_segment (

@@ -35,7 +35,6 @@ public class StreetNetworkImportService implements StreetNetworkImportUseCase {
         RoutingProvider provider = importedEdges.getFirst().provider();
 
         for (int i = 0; i < importedEdgesSize; i += BATCH_SIZE) {
-
             int end = Math.min(i + BATCH_SIZE, importedEdgesSize);
 
             List<RoutingEdgeImportData> importedEdgesBatch = importedEdges.subList(i, end);
@@ -68,13 +67,12 @@ public class StreetNetworkImportService implements StreetNetworkImportUseCase {
                     StreetSegment streetSegment =
                             StreetSegment.builder()
                                     .id(UUID.randomUUID())
-                                    .routingEdge(routingEdge)
+                                    .routingEdgeId(routingEdge.id())
                                     .geometry(geometry)
                                     .build();
 
                     streetSegments.add(streetSegment);
                 }
-
             }
 
             if (!routingEdges.isEmpty()) {
@@ -97,7 +95,7 @@ public class StreetNetworkImportService implements StreetNetworkImportUseCase {
                         .distinct()
                         .toList();
 
-        return streetNetworkRepository.findExistingExternalIds(
+        return streetNetworkRepository.findExistingRoutingEdgeIds(
                 provider,
                 externalIds
         );

@@ -55,7 +55,7 @@ class MapMatchingServiceTest {
 
         StreetSegment streetSegment = StreetSegment.builder()
                 .id(UUID.randomUUID())
-                .routingEdge(routingEdge)
+                .routingEdgeId(routingEdge.id())
                 .geometry(edgeGeometry)
                 .build();
 
@@ -74,7 +74,7 @@ class MapMatchingServiceTest {
         when(mapMatchingProvider.match(inputLocations))
                 .thenReturn(providerResult);
 
-        when(streetNetworkRepository.findStreetSegmentsWithinDistance(
+        when(streetNetworkRepository.findStreetSegmentsNearEdges(
                 List.of(edgeGeometry)
         )).thenReturn(List.of(streetSegment));
 

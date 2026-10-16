@@ -9,22 +9,15 @@ import java.util.UUID;
 @Getter
 public class GameMap {
     private final UUID id;
-    private final String name;
 
     @Builder
-    private GameMap (UUID id, String name) {
+    private GameMap (UUID id) {
         this.id = Objects.requireNonNull(id);
-        this.name = Objects.requireNonNull(name);
-
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("Game map name cannot be blank");
-        }
     }
 
-    public static GameMap create(String name) {
+    public static GameMap create() {
         return new GameMap(
-                UUID.randomUUID(),
-                name
+                UUID.randomUUID()
         );
     }
 

@@ -1,15 +1,21 @@
 package com.streetdom.adapters.out.persistence.streetnetwork;
 
+import com.streetdom.adapters.out.persistence.streetnetwork.entities.RoutingEdgeEntity;
+import com.streetdom.adapters.out.persistence.streetnetwork.entities.StreetSegmentEntity;
+import com.streetdom.adapters.out.persistence.streetnetwork.jpa.RoutingEdgeJpaRepository;
+import com.streetdom.adapters.out.persistence.streetnetwork.jpa.StreetSegmentJpaRepository;
 import com.streetdom.adapters.out.persistence.streetnetwork.mapper.GeometryMapper;
 import com.streetdom.adapters.out.persistence.streetnetwork.mapper.RoutingEdgeMapper;
 import com.streetdom.adapters.out.persistence.streetnetwork.mapper.StreetSegmentMapper;
 import com.streetdom.application.port.out.streetnetwork.StreetNetworkRepository;
+import com.streetdom.domain.model.geography.GeographicArea;
 import com.streetdom.domain.model.geography.Location;
 import com.streetdom.domain.model.streetnetwork.RoutingEdge;
 import com.streetdom.domain.model.streetnetwork.RoutingProvider;
 import com.streetdom.domain.model.streetnetwork.StreetSegment;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiLineString;
 import org.springframework.stereotype.Component;
 import java.util.*;
@@ -42,12 +48,8 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
 
         List<StreetSegmentEntity> streetSegmentEntities =
                 streetSegments.stream()
-                        .map(streetSegment ->
-                             streetSegmentMapper.toEntity(
-                                    streetSegment,
-                                    routingEdgesEntitiesById.get(streetSegment.getRoutingEdge().id())
-                             )
-                        ).toList();
+                        .map(streetSegmentMapper::toEntity)
+                        .toList();
 
         streetSegmentJpaRepository.saveAll(streetSegmentEntities);
     }
@@ -60,7 +62,7 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
 
     @Override
     @Transactional
-    public List<StreetSegment> findStreetSegmentsWithinDistance(List<List<Location>> edgeGeometries) {
+    public List<StreetSegment> findStreetSegmentsNearEdges(List<List<Location>> edgeGeometries) {
 
         MultiLineString matchedGeometry =
                 geometryMapper.toMultiLineString(edgeGeometries);
@@ -74,25 +76,27 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
                         MINIMUM_OVERLAP
                 )
                 .stream()
-                .map(entity -> {
-                        RoutingEdge routingEdge =
-                                routingEdgeMapper.toDomain(
-                                        entity.getRoutingEdge()
-                                );
-
-                        return streetSegmentMapper.toDomain(
-                                entity,
-                                routingEdge
-                        );
-                })
+                .map(streetSegmentMapper::toDomain)
                 .toList();
     }
 
     @Override
-    public Set<String> findExistingExternalIds(RoutingProvider provider, Collection<String> externalIds) {
+    public Set<String> findExistingRoutingEdgeIds(RoutingProvider provider, Collection<String> externalIds) {
         return routingEdgeJpaRepository.findExistingExternalIds(provider, externalIds);
     }
 
+    @Override
+    public List<StreetSegment> findStreetSegmentsInArea(GeographicArea area) {
+
+        Geometry areaGeometry = geometryMapper.toAreaGeometry(area.polygons());
+        String areaWkt = areaGeometry.toText();
+
+        return streetSegmentJpaRepository
+                .findIntersectingArea(areaWkt)
+                .stream()
+                .map(streetSegmentMapper::toDomain)
+                .toList();
+    }
 }
 
 

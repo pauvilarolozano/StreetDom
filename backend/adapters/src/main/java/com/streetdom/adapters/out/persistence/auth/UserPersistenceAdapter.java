@@ -1,5 +1,7 @@
 package com.streetdom.adapters.out.persistence.auth;
 
+import com.streetdom.adapters.out.persistence.auth.jpa.UserJpaRepository;
+import com.streetdom.adapters.out.persistence.auth.mapper.UserMapper;
 import com.streetdom.application.port.out.auth.UserRepository;
 import com.streetdom.domain.model.auth.User;
 import lombok.RequiredArgsConstructor;

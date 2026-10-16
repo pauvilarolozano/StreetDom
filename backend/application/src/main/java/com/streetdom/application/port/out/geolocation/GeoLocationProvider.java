@@ -1,5 +1,6 @@
 package com.streetdom.application.port.out.geolocation;
 
+import com.streetdom.domain.model.geography.GeographicArea;
 import com.streetdom.domain.model.geography.GeographicCell;
 import com.streetdom.domain.model.geography.Location;
 
@@ -9,5 +10,6 @@ public interface GeoLocationProvider {
 
     GeographicCell getCell(Location location);
     Set<GeographicCell> getCellsWithinDistance(GeographicCell cell, int distance);
+    GeographicArea getArea(Set<GeographicCell> cells);
 
 }

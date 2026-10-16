@@ -4,19 +4,23 @@ import com.streetdom.application.game.command.CreateGameCommand;
 import com.streetdom.application.game.command.StartGameCommand;
 import com.streetdom.application.game.result.CreateGameResult;
 import com.streetdom.application.game.result.StartGameResult;
+import com.streetdom.application.game.usecases.GameUseCase;
 import com.streetdom.application.port.out.game.GameMapRepository;
+import com.streetdom.application.port.out.game.GameMapStreetSegmentRepository;
 import com.streetdom.application.port.out.game.GameRepository;
 import com.streetdom.application.port.out.game.PlayerRepository;
+import com.streetdom.application.port.out.geolocation.GeoLocationProvider;
+import com.streetdom.application.port.out.streetnetwork.StreetNetworkRepository;
 import com.streetdom.domain.exception.game.GameMapAlreadyAssignedException;
+import com.streetdom.domain.exception.game.EmptyGameAreaException;
 import com.streetdom.domain.exception.game.GameMapNotFoundException;
-import com.streetdom.domain.exception.game.GameNotFoundException;
-import com.streetdom.domain.exception.game.NotEnoughPlayersException;
-import com.streetdom.domain.model.game.Game;
-import com.streetdom.domain.model.game.Player;
+import com.streetdom.domain.model.game.*;
+import com.streetdom.domain.model.geography.GeographicArea;
+import com.streetdom.domain.model.geography.GeographicCell;
+import com.streetdom.domain.model.streetnetwork.StreetSegment;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.Clock;
 import java.util.*;
 
@@ -26,10 +30,14 @@ public class GameService implements GameUseCase {
 
     private final GameRepository gameRepository;
     private final GameMapRepository gameMapRepository;
+    private final GameMapStreetSegmentRepository gameMapStreetSegmentRepository;
     private final PlayerRepository playerRepository;
+    private final GeoLocationProvider geoLocationProvider;
+    private final StreetNetworkRepository streetNetworkRepository;
+    private final GameServiceMapper mapper;
     private final Clock clock;
-
-    private final int MIN_PLAYERS = 6;
+    
+    //private final int MIN_PLAYERS = 6;
 
     @Override
     @Transactional
@@ -58,6 +66,40 @@ public class GameService implements GameUseCase {
     @Override
     @Transactional
     public StartGameResult startGame(StartGameCommand command) {
+
+        GeographicCell originCell = geoLocationProvider.getCell(command.gpsPosition().location());
+        Set<GeographicCell> playableCells = geoLocationProvider.getCellsWithinDistance(originCell,2);
+
+        GeographicArea gameArea = geoLocationProvider.getArea(playableCells);
+        List<StreetSegment> streetSegments = streetNetworkRepository.findStreetSegmentsInArea(gameArea);
+
+        if (streetSegments.isEmpty()) {
+            throw new EmptyGameAreaException();
+        }
+
+        GameMap gameMap = GameMap.create();
+
+        List<GameMapStreetSegment> gameMapStreetSegments = streetSegments.stream()
+                .map(streetSegment -> GameMapStreetSegment.create(gameMap.getId(), streetSegment.getId()))
+                .toList();
+
+        gameMapRepository.save(gameMap);
+        gameMapStreetSegmentRepository.saveAll(gameMapStreetSegments);
+
+        Game game = Game.create(gameMap.getId());
+        game.start(clock.instant());
+        gameRepository.save(game);
+
+        Player player = Player.create(command.userId(), game.getId(), clock.instant());
+        player.assignInfectedRole();
+        playerRepository.save(player);
+
+        return mapper.toResult(game, player);
+    }
+
+    /*
+    @Transactional
+    public StartGameResult startGameMulti(StartGameCommand command) {
 
         UUID gameId = command.gameId();
         Game game = gameRepository.findById(gameId)
@@ -89,4 +131,5 @@ public class GameService implements GameUseCase {
 
         return null;
     }
+     */
 }

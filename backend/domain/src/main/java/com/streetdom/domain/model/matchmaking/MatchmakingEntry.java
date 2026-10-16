@@ -2,7 +2,6 @@ package com.streetdom.domain.model.matchmaking;
 
 import com.streetdom.domain.model.geography.GeographicCell;
 import com.streetdom.domain.model.geography.GpsPosition;
-import com.streetdom.domain.model.geography.Location;
 
 import java.time.Instant;
 import java.util.Objects;

@@ -2,6 +2,7 @@ package com.streetdom.application.game;
 
 import com.streetdom.application.game.command.CreateGameMapCommand;
 import com.streetdom.application.game.result.CreateGameMapResult;
+import com.streetdom.application.game.usecases.GameMapUseCase;
 import com.streetdom.application.port.out.game.GameMapRepository;
 import com.streetdom.domain.model.game.GameMap;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,11 @@ public class GameMapService implements GameMapUseCase {
     @Override
     public CreateGameMapResult createGameMap(CreateGameMapCommand command) {
 
-        GameMap newGameMap = GameMap.create(command.name());
+        GameMap newGameMap = GameMap.create();
         gameMapRepository.save(newGameMap);
 
         return new CreateGameMapResult(
-                newGameMap.getId(),
-                newGameMap.getName()
+                newGameMap.getId()
         );
     }
 }

@@ -1,6 +1,6 @@
 package com.streetdom.boot.test;
-import com.streetdom.adapters.out.persistence.streetnetwork.RoutingEdgeJpaRepository;
-import com.streetdom.adapters.out.persistence.streetnetwork.StreetSegmentJpaRepository;
+import com.streetdom.adapters.out.persistence.streetnetwork.jpa.RoutingEdgeJpaRepository;
+import com.streetdom.adapters.out.persistence.streetnetwork.jpa.StreetSegmentJpaRepository;
 import com.streetdom.application.streetnetwork.loading.StreetNetworkImportUseCase;
 import com.streetdom.application.port.out.streetnetwork.matching.MapMatchingProvider;
 import com.streetdom.domain.model.geography.GeographicBounds;

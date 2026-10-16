@@ -2,6 +2,7 @@ package com.streetdom.application.game;
 
 import com.streetdom.application.game.command.AddPlayerToGameCommand;
 import com.streetdom.application.game.result.PlayerResult;
+import com.streetdom.application.game.usecases.PlayerUseCase;
 import com.streetdom.application.port.out.game.GameRepository;
 import com.streetdom.application.port.out.game.PlayerRepository;
 import com.streetdom.domain.exception.game.GameNotFoundException;
@@ -19,6 +20,7 @@ public class PlayerService implements PlayerUseCase {
 
     private final PlayerRepository playerRepository;
     private final GameRepository gameRepository;
+    private final GameServiceMapper mapper;
     private final Clock clock;
 
     @Override
@@ -36,11 +38,6 @@ public class PlayerService implements PlayerUseCase {
         Player newPlayer = Player.create(command.userId(), gameId, clock.instant());
         playerRepository.save(newPlayer);
 
-        return new PlayerResult(
-                newPlayer.getUserId(),
-                newPlayer.getGameId(),
-                newPlayer.getRole(),
-                newPlayer.getJoinedAt()
-        );
+        return mapper.toResult(newPlayer);
     }
 }

@@ -56,7 +56,7 @@ class MapMatchingServiceIT {
 
             assertNotNull(segment);
             assertNotNull(segment.getId());
-            assertNotNull(segment.getRoutingEdge());
+            assertNotNull(segment.getRoutingEdgeId());
             assertNotNull(segment.getGeometry());
             assertFalse(segment.getGeometry().isEmpty());
 
@@ -97,7 +97,7 @@ class MapMatchingServiceIT {
             );
 
             assertNotNull(segment.getId());
-            assertNotNull(segment.getRoutingEdge());
+            assertNotNull(segment.getRoutingEdgeId());
             assertNotNull(segment.getGeometry());
             assertFalse(segment.getGeometry().isEmpty());
         }

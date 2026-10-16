@@ -1,6 +1,7 @@
 package com.streetdom.adapters.in.web.game;
 
 import com.streetdom.adapters.in.web.common.ErrorResponse;
+import com.streetdom.domain.exception.game.EmptyGameAreaException;
 import com.streetdom.domain.exception.game.GameMapAlreadyAssignedException;
 import com.streetdom.domain.exception.game.GameMapNotFoundException;
 import com.streetdom.domain.exception.game.GameNotFoundException;
@@ -14,6 +15,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GameExceptionHandler {
+
+    @ExceptionHandler(EmptyGameAreaException.class)
+    public ResponseEntity<ErrorResponse> handleEmptyGameArea(EmptyGameAreaException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        "EMPTY_GAME_AREA",
+                        "There are no street segments available in the game area"
+                ));
+    }
 
     @ExceptionHandler(GameMapNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleGameMapNotFound(GameMapNotFoundException ex) {

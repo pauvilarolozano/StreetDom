@@ -12,17 +12,17 @@ import java.util.UUID;
 public class StreetSegment {
 
     private final UUID id;
-    private final RoutingEdge routingEdge;
+    private final UUID routingEdgeId;
     private final List<Location> geometry;
 
     @Builder
     private StreetSegment(
             UUID id,
-            RoutingEdge routingEdge,
+            UUID routingEdgeId,
             List<Location> geometry
     ) {
         this.id = Objects.requireNonNull(id);
-        this.routingEdge = Objects.requireNonNull(routingEdge);
+        this.routingEdgeId = Objects.requireNonNull(routingEdgeId);
         this.geometry = List.copyOf(Objects.requireNonNull(geometry));
 
         if (geometry.size() < 2) {

@@ -1,6 +1,6 @@
 package com.streetdom.adapters.out.persistence.streetnetwork.mapper;
 
-import com.streetdom.adapters.out.persistence.streetnetwork.RoutingEdgeEntity;
+import com.streetdom.adapters.out.persistence.streetnetwork.entities.RoutingEdgeEntity;
 import com.streetdom.domain.model.streetnetwork.RoutingEdge;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

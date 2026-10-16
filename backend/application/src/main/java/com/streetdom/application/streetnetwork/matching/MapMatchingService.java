@@ -27,6 +27,6 @@ public class MapMatchingService {
                         .map(ProviderMatchedEdge::edgeGeometry)
                         .toList();
 
-        return streetNetworkRepository.findStreetSegmentsWithinDistance(matchedGeometries);
+        return streetNetworkRepository.findStreetSegmentsNearEdges(matchedGeometries);
     }
 }

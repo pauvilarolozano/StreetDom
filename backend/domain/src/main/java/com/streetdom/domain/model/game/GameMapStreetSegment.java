@@ -26,13 +26,12 @@ public class GameMapStreetSegment {
 
     public static GameMapStreetSegment create(
             UUID gameMapId,
-            UUID streetSegmentId,
-            StreetSegmentState initialState
+            UUID streetSegmentId
     ) {
         return new GameMapStreetSegment(
                 gameMapId,
                 streetSegmentId,
-                initialState
+                StreetSegmentState.CLEAN
         );
     }
 

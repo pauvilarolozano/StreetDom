@@ -15,8 +15,35 @@ public class GeometryMapper {
     private final GeometryFactory geometryFactory =
             new GeometryFactory(
                     new PrecisionModel(),
-                    4326
+                    SRID
             );
+
+    public Geometry toAreaGeometry(List<List<Location>> polygons) {
+        return geometryFactory.createGeometryCollection(
+                polygons.stream()
+                        .map(this::toPolygon)
+                        .toArray(Geometry[]::new)
+        ).union();
+    }
+
+    private Polygon toPolygon(List<Location> locations) {
+        Coordinate[] coordinates = locations.stream()
+                .map(location ->
+                        new Coordinate(
+                                location.longitude(),
+                                location.latitude()
+                        ))
+                .toArray(Coordinate[]::new);
+
+        if (!coordinates[0].equals2D(coordinates[coordinates.length - 1])) {
+            coordinates = Arrays.copyOf(coordinates, coordinates.length + 1);
+            coordinates[coordinates.length - 1] = coordinates[0];
+        }
+
+        LinearRing shell = geometryFactory.createLinearRing(coordinates);
+
+        return geometryFactory.createPolygon(shell);
+    }
 
     public LineString toLineString(List<Location> locations) {
 

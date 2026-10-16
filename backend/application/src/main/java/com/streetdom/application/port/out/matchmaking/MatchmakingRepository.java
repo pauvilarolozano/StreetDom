@@ -12,4 +12,5 @@ public interface MatchmakingRepository {
     List<MatchmakingEntry> findByCells(Set<GeographicCell> cells);
 
     void save(MatchmakingEntry entry);
+    void delete(UUID userId);
 }
