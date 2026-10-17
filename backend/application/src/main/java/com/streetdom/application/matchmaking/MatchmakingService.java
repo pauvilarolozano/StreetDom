@@ -51,9 +51,7 @@ public class MatchmakingService implements MatchmakingUseCase {
 
         Set<GeographicCell> nearbyCells = geoLocationProvider.getCellsWithinDistance(cell, 1);
         List<MatchmakingEntry> candidates = matchmakingRepository.findByCells(nearbyCells);
-
-        // todavía no formamos Game
-
+        
         return new JoinMatchmakingResult(
                 MatchmakingStatus.SEARCHING,
                 null

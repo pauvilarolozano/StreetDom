@@ -1,14 +1,17 @@
 package com.streetdom.adapters.out.persistence.game;
 
 import com.streetdom.adapters.out.persistence.game.entities.PlayerEntity;
+import com.streetdom.adapters.out.persistence.game.entities.PlayerId;
 import com.streetdom.adapters.out.persistence.game.jpa.PlayerJpaRepository;
 import com.streetdom.adapters.out.persistence.game.mapper.PlayerMapper;
 import com.streetdom.application.port.out.game.PlayerRepository;
 import com.streetdom.domain.model.game.Player;
+import com.streetdom.domain.model.game.GameState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -17,6 +20,19 @@ public class PlayerPersistenceAdapter implements PlayerRepository {
 
     private final PlayerJpaRepository playerJpaRepository;
     private final PlayerMapper mapper;
+
+    @Override
+    public Optional<UUID> findGameIdByUserIdAndGameState(UUID userId, GameState state) {
+        return playerJpaRepository.findGameIdsByUserIdAndGameState(userId, state)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Player> findPlayerById(UUID userId, UUID gameId) {
+        return playerJpaRepository.findById(new PlayerId(userId, gameId))
+                .map(mapper::toDomain);
+    }
 
     @Override
     public void save(Player player) {

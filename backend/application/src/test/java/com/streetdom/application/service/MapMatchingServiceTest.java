@@ -6,9 +6,7 @@ import com.streetdom.application.port.out.streetnetwork.StreetNetworkRepository;
 import com.streetdom.application.port.out.streetnetwork.matching.ProviderMapMatchingResult;
 import com.streetdom.application.port.out.streetnetwork.matching.ProviderMatchedEdge;
 import com.streetdom.domain.model.geography.Location;
-import com.streetdom.domain.model.streetnetwork.RoutingEdge;
 import com.streetdom.domain.model.streetnetwork.RoutingProvider;
-import com.streetdom.domain.model.streetnetwork.StreetSegment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +33,7 @@ class MapMatchingServiceTest {
     private MapMatchingService mapMatchingService;
 
     @Test
-    void shouldReturnMatchedStreetSegments() {
+    void shouldReturnMatchedStreetSegmentIds() {
 
         List<Location> inputLocations = List.of(
                 new Location(41.37958, 2.15517),
@@ -47,17 +46,7 @@ class MapMatchingServiceTest {
                 new Location(41.37969, 2.15532)
         );
 
-        RoutingEdge routingEdge = RoutingEdge.builder()
-                .id(UUID.randomUUID())
-                .provider(RoutingProvider.VALHALLA)
-                .externalId("233773751144")
-                .build();
-
-        StreetSegment streetSegment = StreetSegment.builder()
-                .id(UUID.randomUUID())
-                .routingEdgeId(routingEdge.id())
-                .geometry(edgeGeometry)
-                .build();
+        UUID streetSegmentId = UUID.randomUUID();
 
         ProviderMatchedEdge matchedEdge =
                 new ProviderMatchedEdge(
@@ -74,18 +63,13 @@ class MapMatchingServiceTest {
         when(mapMatchingProvider.match(inputLocations))
                 .thenReturn(providerResult);
 
-        when(streetNetworkRepository.findStreetSegmentsNearEdges(
+        when(streetNetworkRepository.findStreetSegmentIdsNearEdges(
                 List.of(edgeGeometry)
-        )).thenReturn(List.of(streetSegment));
+        )).thenReturn(Set.of(streetSegmentId));
 
-        List<StreetSegment> result =
+        Set<UUID> result =
                 mapMatchingService.match(inputLocations);
 
-        assertEquals(1, result.size());
-
-        assertEquals(
-                streetSegment.getId(),
-                result.getFirst().getId()
-        );
+        assertEquals(Set.of(streetSegmentId), result);
     }
 }

@@ -66,6 +66,10 @@ public class Game {
         finishedAt = now;
     }
 
+    public boolean canProcessMovements() {
+        return state == GameState.IN_PROGRESS;
+    }
+
     private void validateState() {
 
         if (state == GameState.CREATED && (startedAt != null || finishedAt != null)) {

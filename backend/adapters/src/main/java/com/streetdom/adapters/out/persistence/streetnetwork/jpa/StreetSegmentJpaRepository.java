@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface StreetSegmentJpaRepository extends JpaRepository<StreetSegmentEntity, UUID> {
 
     @Query(value = """
-        SELECT ss.*
+        SELECT ss.id
         FROM street_segment ss
         WHERE ST_DWithin(
             ss.geometry::geography,
@@ -31,7 +32,7 @@ public interface StreetSegmentJpaRepository extends JpaRepository<StreetSegmentE
             NULLIF(ST_Length(ss.geometry), 0)
         ) >= :minimumOverlap
         """, nativeQuery = true)
-    List<StreetSegmentEntity> findWithinDistanceOfGeometry(
+    Set<UUID> findIdsWithinDistanceOfGeometry(
             @Param("geometryWkt") String geometryWkt,
             @Param("toleranceMeters") double toleranceMeters,
             @Param("minimumOverlap") double minimumOverlap

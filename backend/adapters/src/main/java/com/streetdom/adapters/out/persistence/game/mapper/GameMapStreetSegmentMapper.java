@@ -8,6 +8,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class GameMapStreetSegmentMapper {
 
+    public GameMapStreetSegment toDomain(GameMapStreetSegmentEntity entity) {
+        return GameMapStreetSegment.builder()
+                .gameMapId(entity.getId().getGameMapId())
+                .streetSegmentId(entity.getId().getStreetSegmentId())
+                .state(entity.getState())
+                .build();
+    }
+
     public GameMapStreetSegmentEntity toEntity(GameMapStreetSegment gameMapStreetSegment) {
         return GameMapStreetSegmentEntity.builder()
                 .id(new GameMapStreetSegmentId(

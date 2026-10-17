@@ -14,6 +14,7 @@ import com.streetdom.application.port.out.streetnetwork.StreetNetworkRepository;
 import com.streetdom.domain.exception.game.GameMapAlreadyAssignedException;
 import com.streetdom.domain.exception.game.EmptyGameAreaException;
 import com.streetdom.domain.exception.game.GameMapNotFoundException;
+import com.streetdom.domain.exception.game.PlayerAlreadyInActiveGameException;
 import com.streetdom.domain.model.game.*;
 import com.streetdom.domain.model.geography.GeographicArea;
 import com.streetdom.domain.model.geography.GeographicCell;
@@ -66,6 +67,11 @@ public class GameService implements GameUseCase {
     @Override
     @Transactional
     public StartGameResult startGame(StartGameCommand command) {
+
+        playerRepository.findGameIdByUserIdAndGameState(command.userId(), GameState.IN_PROGRESS)
+                .ifPresent(gameId -> {
+                    throw new PlayerAlreadyInActiveGameException(command.userId(), gameId);
+                });
 
         GeographicCell originCell = geoLocationProvider.getCell(command.gpsPosition().location());
         Set<GeographicCell> playableCells = geoLocationProvider.getCellsWithinDistance(originCell,2);

@@ -1,44 +1,78 @@
 package com.streetdom.application.interaction;
 
+import com.streetdom.application.interaction.result.InteractionResult;
+import com.streetdom.application.port.out.game.GameMapStreetSegmentRepository;
+import com.streetdom.application.port.out.game.GameRepository;
+import com.streetdom.application.port.out.game.PlayerRepository;
 import com.streetdom.application.streetnetwork.matching.MapMatchingService;
+import com.streetdom.domain.exception.game.GameNotInProgressException;
+import com.streetdom.domain.exception.game.GameNotFoundException;
+import com.streetdom.domain.exception.game.PlayerNotFoundException;
+import com.streetdom.domain.model.game.Game;
+import com.streetdom.domain.model.game.GameMapStreetSegment;
+import com.streetdom.domain.model.game.Player;
 import com.streetdom.domain.model.geography.Location;
-import com.streetdom.domain.model.interaction.SegmentVisit;
-import com.streetdom.domain.model.streetnetwork.StreetSegment;
+import com.streetdom.domain.model.geography.GpsPosition;
+import com.streetdom.domain.model.interaction.InteractionType;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessMovementService  implements ProcessMovementUseCase {
+public class ProcessMovementService implements ProcessMovementUseCase {
+
+    private final GameRepository gameRepository;
+    private final PlayerRepository playerRepository;
+    private final GameMapStreetSegmentRepository gameMapStreetSegmentRepository;
 
     private final MapMatchingService mapMatchingService;
-    private  final InteractionService interactionService;
-    private final Clock clock;
+    private final InteractionService interactionService;
 
     @Override
-    public List<StreetSegment> process(ProcessMovementCommand command) {
+    @Transactional
+    public InteractionResult process(ProcessMovementCommand command) {
 
-        List<Location> locations =
-                command.locations().stream()
-                        .map(gpsPosition -> new Location(
-                                gpsPosition.location().latitude(),
-                                gpsPosition.location().longitude())
-                        )
-                        .toList();
+        UUID userId = command.userId();
+        UUID gameId = command.gameId();
 
-        List<StreetSegment> matchedSegments = mapMatchingService.match(locations);
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new GameNotFoundException(gameId));
 
-        Instant detectedAt = clock.instant();
+        if (!game.canProcessMovements()) {
+            throw new GameNotInProgressException(gameId);
+        }
 
-        List<SegmentVisit> visitedSegments =
-                matchedSegments.stream()
-                        .map(segment -> new SegmentVisit(segment.getId(), detectedAt))
-                        .toList();
+        Player player = playerRepository.findPlayerById(userId, gameId)
+                .orElseThrow(() -> new PlayerNotFoundException(userId, gameId));
 
-        return List.of();
+        List<Location> locations = command.locations().stream()
+                .map(GpsPosition::location)
+                .toList();
+
+        Set<UUID> streetSegmentIds = mapMatchingService.match(locations);
+
+        if (streetSegmentIds.isEmpty()) {
+            return new InteractionResult(List.of());
+        }
+
+        List<GameMapStreetSegment> gameMapStreetSegments = 
+                gameMapStreetSegmentRepository.findByStreetSegmentIdsAndGameMapId(
+                        streetSegmentIds,
+                        game.getGameMapId()
+                );
+
+        InteractionResult interactionResult =
+                interactionService.apply(player, gameMapStreetSegments, InteractionType.MOVEMENT);
+
+        if (!interactionResult.changedSegments().isEmpty()) {
+            gameMapStreetSegmentRepository.saveAll(interactionResult.changedSegments());
+        }
+        
+        return interactionResult;
     }
 }

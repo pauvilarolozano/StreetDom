@@ -6,5 +6,6 @@ import java.util.UUID;
 
 public record ProcessMovementCommand(
         UUID userId,
+        UUID gameId,
         List<GpsPosition> locations
 ) {}

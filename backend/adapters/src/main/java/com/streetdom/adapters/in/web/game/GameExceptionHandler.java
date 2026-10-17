@@ -5,7 +5,10 @@ import com.streetdom.domain.exception.game.EmptyGameAreaException;
 import com.streetdom.domain.exception.game.GameMapAlreadyAssignedException;
 import com.streetdom.domain.exception.game.GameMapNotFoundException;
 import com.streetdom.domain.exception.game.GameNotFoundException;
+import com.streetdom.domain.exception.game.GameNotInProgressException;
 import com.streetdom.domain.exception.game.NotEnoughPlayersException;
+import com.streetdom.domain.exception.game.PlayerNotFoundException;
+import com.streetdom.domain.exception.game.PlayerAlreadyInActiveGameException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,36 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GameExceptionHandler {
+
+    @ExceptionHandler(GameNotInProgressException.class)
+    public ResponseEntity<ErrorResponse> handleGameNotInProgress(GameNotInProgressException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(
+                        "GAME_NOT_IN_PROGRESS",
+                        "Movements can only be processed for a game in progress"
+                ));
+    }
+
+    @ExceptionHandler(PlayerAlreadyInActiveGameException.class)
+    public ResponseEntity<ErrorResponse> handlePlayerAlreadyInActiveGame(PlayerAlreadyInActiveGameException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(
+                        "PLAYER_ALREADY_IN_ACTIVE_GAME",
+                        "The user already participates in a game in progress"
+                ));
+    }
+
+    @ExceptionHandler(PlayerNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePlayerNotFound(PlayerNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(
+                        "PLAYER_NOT_FOUND",
+                        "The player was not found in the requested game"
+                ));
+    }
 
     @ExceptionHandler(EmptyGameAreaException.class)
     public ResponseEntity<ErrorResponse> handleEmptyGameArea(EmptyGameAreaException ex) {

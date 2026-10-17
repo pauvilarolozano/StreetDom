@@ -62,7 +62,7 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
 
     @Override
     @Transactional
-    public List<StreetSegment> findStreetSegmentsNearEdges(List<List<Location>> edgeGeometries) {
+    public Set<UUID> findStreetSegmentIdsNearEdges(List<List<Location>> edgeGeometries) {
 
         MultiLineString matchedGeometry =
                 geometryMapper.toMultiLineString(edgeGeometries);
@@ -70,14 +70,11 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
         String geometryWkt = matchedGeometry.toText();
 
         return streetSegmentJpaRepository
-                .findWithinDistanceOfGeometry(
+                .findIdsWithinDistanceOfGeometry(
                         geometryWkt,
                         MATCH_TOLERANCE_METERS,
                         MINIMUM_OVERLAP
-                )
-                .stream()
-                .map(streetSegmentMapper::toDomain)
-                .toList();
+                );
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.streetdom.application.interaction;
 
-import com.streetdom.domain.model.streetnetwork.StreetSegment;
-
-import java.util.List;
+import com.streetdom.application.interaction.result.InteractionResult;
 
 public interface ProcessMovementUseCase {
-    List<StreetSegment> process(ProcessMovementCommand command);
+    InteractionResult process(ProcessMovementCommand command);
 }
