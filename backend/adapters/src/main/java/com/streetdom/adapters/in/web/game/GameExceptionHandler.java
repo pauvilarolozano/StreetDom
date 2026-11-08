@@ -2,9 +2,8 @@ package com.streetdom.adapters.in.web.game;
 
 import com.streetdom.adapters.in.web.common.ErrorResponse;
 import com.streetdom.domain.exception.game.EmptyGameAreaException;
-import com.streetdom.domain.exception.game.GameMapAlreadyAssignedException;
-import com.streetdom.domain.exception.game.GameMapNotFoundException;
 import com.streetdom.domain.exception.game.GameNotFoundException;
+import com.streetdom.domain.exception.game.GameNotInCreatedStateException;
 import com.streetdom.domain.exception.game.GameNotInProgressException;
 import com.streetdom.domain.exception.game.NotEnoughPlayersException;
 import com.streetdom.domain.exception.game.PlayerNotFoundException;
@@ -18,6 +17,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GameExceptionHandler {
+
+    @ExceptionHandler(GameNotInCreatedStateException.class)
+    public ResponseEntity<ErrorResponse> handleGameNotCreated(GameNotInCreatedStateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(
+                        "GAME_NOT_IN_CREATED_STATE",
+                        "Only a game in CREATED state can be started"
+                ));
+    }
 
     @ExceptionHandler(GameNotInProgressException.class)
     public ResponseEntity<ErrorResponse> handleGameNotInProgress(GameNotInProgressException ex) {
@@ -59,25 +68,9 @@ public class GameExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(GameMapNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleGameMapNotFound(GameMapNotFoundException ex) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(
-                        "GAME_MAP_NOT_FOUND",
-                        "The requested game map was not found"
-                ));
-    }
 
-    @ExceptionHandler(GameMapAlreadyAssignedException.class)
-    public ResponseEntity<ErrorResponse> handleGameMapAlreadyAssigned(GameMapAlreadyAssignedException ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(
-                        "GAME_MAP_ALREADY_ASSIGNED",
-                        "The requested game map is already assigned to another game"
-                ));
-    }
+
+
 
     @ExceptionHandler(GameNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleJoinGame(GameNotFoundException ex) {

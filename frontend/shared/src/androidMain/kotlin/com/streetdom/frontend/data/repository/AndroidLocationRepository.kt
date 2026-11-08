@@ -31,9 +31,18 @@ class AndroidLocationRepository(
                 Priority.PRIORITY_HIGH_ACCURACY,
                 null
             ).await()?.let {
+                val isoDate = java.text.SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                    java.util.Locale.US
+                ).apply {
+                    timeZone = java.util.TimeZone.getTimeZone("UTC")
+                }.format(java.util.Date(it.time))
+
                 Location(
                     latitude = it.latitude,
-                    longitude = it.longitude
+                    longitude = it.longitude,
+                    recordedAt = isoDate,
+                    accuracyMeters = it.accuracy.toDouble()
                 )
             }
         } catch (e: Exception) {

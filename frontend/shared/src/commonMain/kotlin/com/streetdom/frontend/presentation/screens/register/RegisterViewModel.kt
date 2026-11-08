@@ -7,17 +7,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.model.RegisterCredentials
 import com.streetdom.frontend.domain.result.RegisterResult
+import com.streetdom.frontend.domain.session.AuthenticatedSessionInitializer
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class RegisterViewModel (
-    private val authUseCase: AuthUseCase
-
-): ViewModel() {
-
-    //TODO hacerlo con stateflow cunado hayas mas flows, validacion de formularios?
+class RegisterViewModel(
+    private val authUseCase: AuthUseCase,
+    private val sessionInitializer: AuthenticatedSessionInitializer,
+) : ViewModel() {
 
     var uiState by mutableStateOf(RegisterUiState())
         private set
@@ -45,7 +44,6 @@ class RegisterViewModel (
     }
 
     fun onRegisterClick() {
-
         if (!validateForm()) return
 
         val credentials = RegisterCredentials(
@@ -65,6 +63,7 @@ class RegisterViewModel (
     private suspend fun register(credentials: RegisterCredentials) {
         when (authUseCase.register(credentials)) {
             is RegisterResult.Success -> {
+                sessionInitializer.initialize()
                 uiState = uiState.copy(isLoading = false, registerError = null)
                 _events.emit(RegisterEvent.RegisterSuccess)
 
@@ -78,7 +77,6 @@ class RegisterViewModel (
                 uiState = uiState.copy(isLoading = false, registerError = "Server error")
             }
         }
-
     }
 
     private fun validateForm(): Boolean {
@@ -110,5 +108,4 @@ class RegisterViewModel (
         return usernameError == null && emailError == null &&
                 passwordError == null && confirmPasswordError == null
     }
-
 }

@@ -7,16 +7,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.model.LoginCredentials
 import com.streetdom.frontend.domain.result.LoginResult
+import com.streetdom.frontend.domain.session.AuthenticatedSessionInitializer
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel (
-    private val authUseCase: AuthUseCase
-): ViewModel() {
-
-    //TODO hacerlo con stateflow cuando haya mas flows, validacion de formularios?
+class LoginViewModel(
+    private val authUseCase: AuthUseCase,
+    private val sessionInitializer: AuthenticatedSessionInitializer,
+) : ViewModel() {
 
     var uiState by mutableStateOf(LoginUiState())
         private set
@@ -27,6 +27,7 @@ class LoginViewModel (
     fun onUsernameChange(username: String) {
         uiState = uiState.copy(username = username, usernameError = null, loginError = null)
     }
+
     fun onPasswordChange(password: String) {
         uiState = uiState.copy(password = password, passwordError = null, loginError = null)
     }
@@ -47,16 +48,16 @@ class LoginViewModel (
     }
 
     private suspend fun login(credentials: LoginCredentials) {
-
         when (authUseCase.login(credentials)) {
             is LoginResult.Success -> {
-                uiState = uiState.copy(isLoading = false,loginError = null)
+                sessionInitializer.initialize()
+                uiState = uiState.copy(isLoading = false, loginError = null)
                 _events.emit(LoginEvent.LoginSuccess)
 
             } is LoginResult.InvalidCredentials -> {
                 uiState = uiState.copy(isLoading = false,loginError = "Invalid credentials")
 
-            }is LoginResult.NetworkError -> {
+            } is LoginResult.NetworkError -> {
                 uiState = uiState.copy(isLoading = false, loginError = "Network error")
 
             } else -> {
@@ -66,7 +67,6 @@ class LoginViewModel (
     }
 
     private fun validateForm(): Boolean {
-
         val usernameError =
             if (uiState.username.isBlank()) "Username is required" else null
 
@@ -80,5 +80,4 @@ class LoginViewModel (
 
         return usernameError == null && passwordError == null
     }
-
 }

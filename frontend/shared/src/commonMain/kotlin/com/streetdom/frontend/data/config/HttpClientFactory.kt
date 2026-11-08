@@ -67,25 +67,30 @@ class HttpClientFactory(
                         val refreshToken = tokenStorage.getRefreshToken()
                             ?: return@refreshTokens null
 
-                        val response = refreshClient.post(
-                            ApiConfig.REFRESH_URL
-                        ) {
-                            setBody(RefreshTokenRequest(refreshToken))
+                        try {
+                            val response = refreshClient.post(
+                                ApiConfig.REFRESH_URL
+                            ) {
+                                setBody(RefreshTokenRequest(refreshToken))
+                            }
+
+                            val tokensResponse = response.body<TokensResponse>()
+
+                            val tokens = Tokens(
+                                accessToken = tokensResponse.accessToken,
+                                refreshToken = tokensResponse.refreshToken
+                            )
+
+                            tokenStorage.saveTokens(tokens)
+
+                            BearerTokens(
+                                accessToken = tokens.accessToken,
+                                refreshToken = tokens.refreshToken
+                            )
+                        } catch (_: Exception) {
+                            tokenStorage.clear()
+                            null
                         }
-
-                        val tokensResponse = response.body<TokensResponse>()
-
-                        val tokens = Tokens(
-                            accessToken = tokensResponse.accessToken,
-                            refreshToken = tokensResponse.refreshToken
-                        )
-
-                        tokenStorage.saveTokens(tokens)
-
-                        BearerTokens(
-                            accessToken = tokens.accessToken,
-                            refreshToken = tokens.refreshToken
-                        )
                     }
                 }
             }

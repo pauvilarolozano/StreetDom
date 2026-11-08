@@ -2,6 +2,7 @@ package com.streetdom.frontend.presentation.screens.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.streetdom.frontend.domain.session.AuthenticatedSessionInitializer
 import com.streetdom.frontend.domain.useCase.AuthUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -11,7 +12,8 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 class SplashViewModel(
-    private val authUseCase: AuthUseCase
+    private val authUseCase: AuthUseCase,
+    private val sessionInitializer: AuthenticatedSessionInitializer,
 ) : ViewModel() {
 
     private val _events = MutableSharedFlow<SplashEvent>()
@@ -24,14 +26,30 @@ class SplashViewModel(
     private fun checkSession() {
         viewModelScope.launch {
             val authenticationJob = async {
-                authUseCase.authenticatedSession()
+                try {
+                    authUseCase.authenticatedSession()
+                } catch (_: Exception) {
+                    false
+                }
             }
 
             delay(1500.milliseconds)
 
-            when (authenticationJob.await()) {
-                true -> _events.emit(SplashEvent.Authenticated)
-                false -> _events.emit(SplashEvent.Unauthenticated)
+            val isAuthenticated = try {
+                authenticationJob.await()
+            } catch (_: Exception) {
+                false
+            }
+
+            if (isAuthenticated) {
+                try {
+                    sessionInitializer.initialize()
+                } catch (_: Exception) {
+                    // Ignore initialization errors so navigation proceeds safely
+                }
+                _events.emit(SplashEvent.Authenticated)
+            } else {
+                _events.emit(SplashEvent.Unauthenticated)
             }
         }
     }

@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public record StartGameResult(
         UUID gameId,
-        UUID gameMapId,
         GameState state,
         Instant startedAt,
         PlayerResult player

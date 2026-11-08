@@ -2,5 +2,7 @@ package com.streetdom.frontend.domain.model
 
 data class Location(
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val recordedAt: String? = null,
+    val accuracyMeters: Double? = null
 )

@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.streetdom.frontend.domain.model.Location
 import com.streetdom.frontend.presentation.screens.play.map.MapConfig
@@ -20,19 +20,17 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PlayScreen(
     onBack: () -> Unit
 ) {
-
     val viewModel: PlayViewModel = koinViewModel()
     val mapConfig: MapConfig = koinInject()
+    val uiState = viewModel.uiState
     val location by viewModel.location.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.loadLocation()
-    }
 
     PlayContent(
         onBack = onBack,
         mapConfig = mapConfig,
-        location = location
+        uiState = uiState,
+        location = location,
+        onReloadMap = viewModel::reloadMap
     )
 }
 
@@ -41,7 +39,9 @@ fun PlayScreen(
 private fun PlayContent(
     onBack: () -> Unit,
     mapConfig: MapConfig,
-    location: Location?
+    uiState: PlayUiState,
+    location: Location?,
+    onReloadMap: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -50,6 +50,11 @@ private fun PlayContent(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Text("⬅️")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onReloadMap) {
+                        Text("🔄")
                     }
                 }
             )
@@ -61,10 +66,17 @@ private fun PlayContent(
                 .padding(paddingValues)
         ) {
             MapView(
-                Modifier.fillMaxSize(),
-                location,
-                mapConfig
+                modifier = Modifier.fillMaxSize(),
+                location = location ?: uiState.currentLocation,
+                segments = uiState.currentGame?.segments.orEmpty(),
+                mapConfig = mapConfig
             )
+
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
     }
 }

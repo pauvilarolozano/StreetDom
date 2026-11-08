@@ -20,12 +20,12 @@ public class GameEntity {
     @Id
     private UUID id;
 
-    @Column(nullable = false, unique = true)
-    private UUID gameMapId;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private GameState state;
+
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
     private Instant startedAt;
 

@@ -1,7 +1,7 @@
 package com.streetdom.application.interaction;
 
 import com.streetdom.application.interaction.result.InteractionResult;
-import com.streetdom.application.port.out.game.GameMapStreetSegmentRepository;
+import com.streetdom.application.port.out.game.GameStreetSegmentRepository;
 import com.streetdom.application.port.out.game.GameRepository;
 import com.streetdom.application.port.out.game.PlayerRepository;
 import com.streetdom.application.streetnetwork.matching.MapMatchingService;
@@ -9,7 +9,7 @@ import com.streetdom.domain.exception.game.GameNotInProgressException;
 import com.streetdom.domain.exception.game.GameNotFoundException;
 import com.streetdom.domain.exception.game.PlayerNotFoundException;
 import com.streetdom.domain.model.game.Game;
-import com.streetdom.domain.model.game.GameMapStreetSegment;
+import com.streetdom.domain.model.game.GameStreetSegment;
 import com.streetdom.domain.model.game.Player;
 import com.streetdom.domain.model.geography.Location;
 import com.streetdom.domain.model.geography.GpsPosition;
@@ -28,7 +28,7 @@ public class ProcessMovementService implements ProcessMovementUseCase {
 
     private final GameRepository gameRepository;
     private final PlayerRepository playerRepository;
-    private final GameMapStreetSegmentRepository gameMapStreetSegmentRepository;
+    private final GameStreetSegmentRepository gameStreetSegmentRepository;
 
     private final MapMatchingService mapMatchingService;
     private final InteractionService interactionService;
@@ -60,17 +60,17 @@ public class ProcessMovementService implements ProcessMovementUseCase {
             return new InteractionResult(List.of());
         }
 
-        List<GameMapStreetSegment> gameMapStreetSegments = 
-                gameMapStreetSegmentRepository.findByStreetSegmentIdsAndGameMapId(
+        List<GameStreetSegment> gameStreetSegments =
+                gameStreetSegmentRepository.findByStreetSegmentIdsAndGameId(
                         streetSegmentIds,
-                        game.getGameMapId()
+                        game.getId()
                 );
 
         InteractionResult interactionResult =
-                interactionService.apply(player, gameMapStreetSegments, InteractionType.MOVEMENT);
+                interactionService.apply(player, gameStreetSegments, InteractionType.MOVEMENT);
 
         if (!interactionResult.changedSegments().isEmpty()) {
-            gameMapStreetSegmentRepository.saveAll(interactionResult.changedSegments());
+            gameStreetSegmentRepository.saveAll(interactionResult.changedSegments());
         }
         
         return interactionResult;

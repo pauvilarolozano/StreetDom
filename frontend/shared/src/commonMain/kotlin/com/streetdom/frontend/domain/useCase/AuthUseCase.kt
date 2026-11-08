@@ -3,16 +3,18 @@ package com.streetdom.frontend.domain.useCase
 import com.streetdom.frontend.domain.model.LoginCredentials
 import com.streetdom.frontend.domain.model.RegisterCredentials
 import com.streetdom.frontend.domain.repository.AuthRepository
+import com.streetdom.frontend.domain.repository.GameRepository
 import com.streetdom.frontend.domain.result.GetProfileResult
 import com.streetdom.frontend.domain.result.LoginResult
 import com.streetdom.frontend.domain.result.RegisterResult
 import com.streetdom.frontend.domain.storage.TokensStorage
 import com.streetdom.frontend.domain.storage.UserStorage
 
-class AuthUseCase (
+class AuthUseCase(
     private val authRepository: AuthRepository,
     private val tokensStorage: TokensStorage,
-    private val userStorage: UserStorage
+    private val userStorage: UserStorage,
+    private val gameRepository: GameRepository,
 ) {
 
     suspend fun login(credentials: LoginCredentials): LoginResult {
@@ -49,6 +51,7 @@ class AuthUseCase (
         } finally {
             tokensStorage.clear()
             userStorage.clear()
+            gameRepository.clearCurrentGame()
         }
     }
 
@@ -62,5 +65,4 @@ class AuthUseCase (
             else -> false
         }
     }
-
 }

@@ -5,6 +5,12 @@ import com.streetdom.adapters.in.web.game.request.CreateGameRequest;
 import com.streetdom.adapters.in.web.game.request.StartGameRequest;
 import com.streetdom.adapters.in.web.game.response.CreateGameResponse;
 import com.streetdom.adapters.in.web.game.response.StartGameResponse;
+import com.streetdom.adapters.in.web.game.response.GameSegmentsResponse;
+import com.streetdom.adapters.in.web.game.response.CurrentGameResponse;
+import com.streetdom.application.game.query.GetCurrentGameQuery;
+import com.streetdom.application.game.query.GetGameSegmentsQuery;
+import com.streetdom.application.game.result.GameSegmentsResult;
+import com.streetdom.application.game.usecases.GameSegmentUseCase;
 import com.streetdom.adapters.in.web.security.SecurityUser;
 import com.streetdom.application.game.command.CreateGameCommand;
 import com.streetdom.application.game.command.StartGameCommand;
@@ -19,21 +25,45 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
 public class GameController {
 
     private final GameUseCase gameUseCase;
+    private final GameSegmentUseCase gameSegmentUseCase;
     private final GameWebMapper mapper;
+
+    @GetMapping("/current")
+    public ResponseEntity<CurrentGameResponse> getCurrentGame(
+            @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        return gameUseCase.getCurrentGame(new GetCurrentGameQuery(securityUser.getId()))
+                .map(result -> ResponseEntity.ok(mapper.toResponse(result)))
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/{gameId}/segments")
+    public ResponseEntity<GameSegmentsResponse> getGameSegments(
+            @PathVariable UUID gameId,
+            @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        GameSegmentsResult result = gameSegmentUseCase.getGameSegments(new GetGameSegmentsQuery(securityUser.getId(), gameId));
+        return ResponseEntity.ok(mapper.toResponse(result));
+    }
 
 
     @PostMapping
-    public ResponseEntity<CreateGameResponse> createGame(@Valid @RequestBody CreateGameRequest request) {
+    public ResponseEntity<CreateGameResponse> createGame(
+            @Valid @RequestBody CreateGameRequest request,
+            @AuthenticationPrincipal SecurityUser securityUser
+    ) {
 
-        CreateGameCommand command = new CreateGameCommand(request.gameMapId());
+        CreateGameCommand command = mapper.toCommand(request, securityUser.getId());
         CreateGameResult result = gameUseCase.createGame(command);
-        CreateGameResponse response = new CreateGameResponse(result.gameId(),result.gameMapId(),result.state());
+        CreateGameResponse response = new CreateGameResponse(result.gameId(),result.state());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -50,7 +80,7 @@ public class GameController {
         StartGameResponse response = mapper.toResponse(result);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body(response);
     }
 

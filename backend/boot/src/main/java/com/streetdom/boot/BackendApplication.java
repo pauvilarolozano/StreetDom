@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = "com.streetdom")
 @ConfigurationPropertiesScan(basePackages = "com.streetdom")
-@EntityScan("com.streetdom.adapters.out.persistence.entity")
-@EnableJpaRepositories("com.streetdom.adapters.out.persistence.jpa")
+@EntityScan("com.streetdom.adapters.out.persistence")
+@EnableJpaRepositories("com.streetdom.adapters.out.persistence")
 public class BackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);

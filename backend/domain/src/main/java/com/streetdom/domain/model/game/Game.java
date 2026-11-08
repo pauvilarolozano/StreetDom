@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 public class Game {
     private final UUID id;
-    private final UUID gameMapId;
+    private final Instant createdAt;
     private GameState state;
     private Instant startedAt;
     private Instant finishedAt;
@@ -18,14 +18,14 @@ public class Game {
     @Builder
     private Game(
             UUID id,
-            UUID gameMapId,
             GameState state,
+            Instant createdAt,
             Instant startedAt,
             Instant finishedAt
     ) {
         this.id = Objects.requireNonNull(id);
-        this.gameMapId = Objects.requireNonNull(gameMapId);
         this.state = Objects.requireNonNull(state);
+        this.createdAt = Objects.requireNonNull(createdAt);
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
 
@@ -33,11 +33,11 @@ public class Game {
 
     }
 
-    public static Game create(UUID gameMapId) {
+    public static Game create(Instant now) {
         return new Game(
                 UUID.randomUUID(),
-                gameMapId,
                 GameState.CREATED,
+                now,
                 null,
                 null
         );

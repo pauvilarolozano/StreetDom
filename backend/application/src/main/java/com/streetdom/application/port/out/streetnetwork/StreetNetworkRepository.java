@@ -14,6 +14,8 @@ import java.util.UUID;
 
 public interface StreetNetworkRepository {
 
+    List<StreetSegment> findStreetSegmentsByIds(Set<UUID> ids);
+
     void save(
             List<RoutingEdge> routingEdges,
             List<StreetSegment> streetSegments

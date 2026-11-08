@@ -43,29 +43,22 @@ CREATE INDEX idx_street_segment_geography
     ON street_segment
     USING GIST ((geometry::geography));
 
-CREATE TABLE game_map (
-    id UUID PRIMARY KEY
+CREATE TABLE game (
+    id UUID PRIMARY KEY,
+    state VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    started_at TIMESTAMP WITH TIME ZONE,
+    finished_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE TABLE game_map_street_segment (
-    game_map_id UUID NOT NULL,
+CREATE TABLE game_street_segment (
+    game_id UUID NOT NULL,
     street_segment_id UUID NOT NULL,
     state VARCHAR(50) NOT NULL,
 
-    CONSTRAINT pk_game_map_street_segment PRIMARY KEY (game_map_id, street_segment_id),
-    CONSTRAINT fk_game_map_street_segment_game_map FOREIGN KEY (game_map_id) REFERENCES game_map(id),
-    CONSTRAINT fk_game_map_street_segment_street_segment FOREIGN KEY (street_segment_id) REFERENCES street_segment(id)
-);
-
-CREATE TABLE game (
-    id UUID PRIMARY KEY,
-    game_map_id UUID NOT NULL,
-    state VARCHAR(50) NOT NULL,
-    started_at TIMESTAMP WITH TIME ZONE,
-    finished_at TIMESTAMP WITH TIME ZONE,
-
-    CONSTRAINT fk_game_game_map FOREIGN KEY (game_map_id) REFERENCES game_map(id),
-    CONSTRAINT uk_game_game_map UNIQUE (game_map_id)
+    CONSTRAINT pk_game_street_segment PRIMARY KEY (game_id, street_segment_id),
+    CONSTRAINT fk_game_street_segment_game FOREIGN KEY (game_id) REFERENCES game(id),
+    CONSTRAINT fk_game_street_segment_street_segment FOREIGN KEY (street_segment_id) REFERENCES street_segment(id)
 );
 
 CREATE TABLE player (

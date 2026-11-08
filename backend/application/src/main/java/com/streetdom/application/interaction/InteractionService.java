@@ -1,7 +1,7 @@
 package com.streetdom.application.interaction;
 
 import com.streetdom.application.interaction.result.InteractionResult;
-import com.streetdom.domain.model.game.GameMapStreetSegment;
+import com.streetdom.domain.model.game.GameStreetSegment;
 import com.streetdom.domain.model.game.Player;
 import com.streetdom.domain.model.game.StreetSegmentState;
 import com.streetdom.domain.model.interaction.InteractionType;
@@ -16,31 +16,31 @@ public class InteractionService {
 
     public InteractionResult apply(
             Player player,
-            List<GameMapStreetSegment> segments,
+            List<GameStreetSegment> segments,
             InteractionType interactionType
     ) {
-        List<GameMapStreetSegment> changedSegments = switch (interactionType) {
+        List<GameStreetSegment> changedSegments = switch (interactionType) {
             case MOVEMENT -> applyMovement(player, segments);
         };
 
         return new InteractionResult(changedSegments);
     }
 
-    private List<GameMapStreetSegment> applyMovement(Player player, List<GameMapStreetSegment> segments) {
+    private List<GameStreetSegment> applyMovement(Player player, List<GameStreetSegment> segments) {
         return switch (player.getRole()) {
-            case INFECTED -> applyToSegments(segments, GameMapStreetSegment::infect);
-            case MEDIC -> applyToSegments(segments, GameMapStreetSegment::disinfect);
+            case INFECTED -> applyToSegments(segments, GameStreetSegment::infect);
+            case MEDIC -> applyToSegments(segments, GameStreetSegment::disinfect);
             case SURVIVOR, UNASSIGNED -> List.of();
         };
     }
 
-    private List<GameMapStreetSegment> applyToSegments(
-            List<GameMapStreetSegment> segments,
-            Consumer<GameMapStreetSegment> interaction
+    private List<GameStreetSegment> applyToSegments(
+            List<GameStreetSegment> segments,
+            Consumer<GameStreetSegment> interaction
     ) {
-        List<GameMapStreetSegment> changedSegments = new ArrayList<>();
+        List<GameStreetSegment> changedSegments = new ArrayList<>();
 
-        for (GameMapStreetSegment segment : segments) {
+        for (GameStreetSegment segment : segments) {
             StreetSegmentState previousState = segment.getState();
             interaction.accept(segment);
 

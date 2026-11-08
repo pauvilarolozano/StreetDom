@@ -5,15 +5,20 @@ import com.streetdom.application.game.command.StartGameCommand;
 import com.streetdom.application.game.result.CreateGameResult;
 import com.streetdom.application.game.result.StartGameResult;
 import com.streetdom.application.game.usecases.GameUseCase;
-import com.streetdom.application.port.out.game.GameMapRepository;
-import com.streetdom.application.port.out.game.GameMapStreetSegmentRepository;
+import com.streetdom.application.game.usecases.GameSegmentUseCase;
+import com.streetdom.application.game.query.GetCurrentGameQuery;
+import com.streetdom.application.game.query.GetGameSegmentsQuery;
+import com.streetdom.application.game.result.CurrentGameResult;
+import com.streetdom.application.game.result.GameSegmentsResult;
+import com.streetdom.application.port.out.game.GameStreetSegmentRepository;
 import com.streetdom.application.port.out.game.GameRepository;
 import com.streetdom.application.port.out.game.PlayerRepository;
 import com.streetdom.application.port.out.geolocation.GeoLocationProvider;
 import com.streetdom.application.port.out.streetnetwork.StreetNetworkRepository;
-import com.streetdom.domain.exception.game.GameMapAlreadyAssignedException;
 import com.streetdom.domain.exception.game.EmptyGameAreaException;
-import com.streetdom.domain.exception.game.GameMapNotFoundException;
+import com.streetdom.domain.exception.game.GameNotFoundException;
+import com.streetdom.domain.exception.game.GameNotInCreatedStateException;
+import com.streetdom.domain.exception.game.PlayerNotFoundException;
 import com.streetdom.domain.exception.game.PlayerAlreadyInActiveGameException;
 import com.streetdom.domain.model.game.*;
 import com.streetdom.domain.model.geography.GeographicArea;
@@ -23,6 +28,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -30,43 +36,33 @@ import java.util.*;
 public class GameService implements GameUseCase {
 
     private final GameRepository gameRepository;
-    private final GameMapRepository gameMapRepository;
-    private final GameMapStreetSegmentRepository gameMapStreetSegmentRepository;
+    private final GameStreetSegmentRepository gameStreetSegmentRepository;
     private final PlayerRepository playerRepository;
     private final GeoLocationProvider geoLocationProvider;
     private final StreetNetworkRepository streetNetworkRepository;
     private final GameServiceMapper mapper;
+    private final GameSegmentUseCase gameSegmentUseCase;
     private final Clock clock;
     
     //private final int MIN_PLAYERS = 6;
 
     @Override
     @Transactional
-    public CreateGameResult createGame(CreateGameCommand command) {
+    public Optional<CurrentGameResult> getCurrentGame(GetCurrentGameQuery query) {
+        return gameRepository.findLatestByUserIdAndState(query.userId(), GameState.IN_PROGRESS)
+                .or(() -> gameRepository.findLatestByUserIdAndState(query.userId(), GameState.CREATED))
+                .map(game -> {
+                    Player player = playerRepository.findPlayerById(query.userId(), game.getId())
+                            .orElseThrow(() -> new PlayerNotFoundException(query.userId(), game.getId()));
 
-        UUID gameMapId = command.gameMapId();
-
-        if (!gameMapRepository.existsById(gameMapId)) {
-            throw new GameMapNotFoundException(gameMapId);
-        }
-
-        if (gameRepository.existsByGameMapId(gameMapId)) {
-            throw new GameMapAlreadyAssignedException(gameMapId);
-        }
-
-        Game newGame = Game.create(gameMapId);
-        gameRepository.save(newGame);
-
-        return new CreateGameResult(
-                newGame.getId(),
-                newGame.getGameMapId(),
-                newGame.getState()
-        );
+                    GameSegmentsResult gameSegments = gameSegmentUseCase.getGameSegments(new GetGameSegmentsQuery(query.userId(), game.getId()));
+                    return mapper.toCurrentGameResult(game, player, gameSegments);
+                });
     }
 
     @Override
     @Transactional
-    public StartGameResult startGame(StartGameCommand command) {
+    public CreateGameResult createGame(CreateGameCommand command) {
 
         playerRepository.findGameIdByUserIdAndGameState(command.userId(), GameState.IN_PROGRESS)
                 .ifPresent(gameId -> {
@@ -83,59 +79,47 @@ public class GameService implements GameUseCase {
             throw new EmptyGameAreaException();
         }
 
-        GameMap gameMap = GameMap.create();
-
-        List<GameMapStreetSegment> gameMapStreetSegments = streetSegments.stream()
-                .map(streetSegment -> GameMapStreetSegment.create(gameMap.getId(), streetSegment.getId()))
-                .toList();
-
-        gameMapRepository.save(gameMap);
-        gameMapStreetSegmentRepository.saveAll(gameMapStreetSegments);
-
-        Game game = Game.create(gameMap.getId());
-        game.start(clock.instant());
+        Instant now = clock.instant();
+        Game game = Game.create(now);
         gameRepository.save(game);
 
-        Player player = Player.create(command.userId(), game.getId(), clock.instant());
-        player.assignInfectedRole();
+        List<GameStreetSegment> gameStreetSegments = streetSegments.stream()
+                .map(streetSegment -> GameStreetSegment.create(game.getId(), streetSegment.getId()))
+                .toList();
+        gameStreetSegmentRepository.saveAll(gameStreetSegments);
+
+        Player player = Player.create(command.userId(), game.getId(), now);
         playerRepository.save(player);
 
-        return mapper.toResult(game, player);
+        return new CreateGameResult(game.getId(), game.getState());
     }
 
-    /*
-    @Transactional
-    public StartGameResult startGameMulti(StartGameCommand command) {
 
+    @Override
+    @Transactional
+    public StartGameResult startGame(StartGameCommand command) {
         UUID gameId = command.gameId();
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new GameNotFoundException(gameId));
 
-        List<Player> players = new ArrayList<>(
-                playerRepository.findByGameId(gameId)
-        );
-
-        if (players.size() < MIN_PLAYERS) {
-            throw new NotEnoughPlayersException(gameId,MIN_PLAYERS);
+        if (game.getState() != GameState.CREATED) {
+            throw new GameNotInCreatedStateException(gameId);
         }
 
-        Collections.shuffle(players);
+        Player player = playerRepository.findPlayerById(command.userId(), gameId)
+                .orElseThrow(() -> new PlayerNotFoundException(command.userId(), gameId));
 
-        //TODO: cambiar forma de asignar en el futuro
-        players.get(0).assignInfectedRole();
-        players.get(1).assignMedicRole();
+        playerRepository.findGameIdByUserIdAndGameState(command.userId(), GameState.IN_PROGRESS)
+                .ifPresent(activeGameId -> {
+                    throw new PlayerAlreadyInActiveGameException(command.userId(), activeGameId);
+                });
 
-        for (int i = 2; i < players.size(); i++) {
-            players.get(i).assignSurvivorRole();
-        }
+        player.assignInfectedRole();  //TODO modificar esta asignacion en el futuro
+        playerRepository.save(player);
 
-        //TODO: inicializar estado map GameMapStreetSegments y estados iniciales
         game.start(clock.instant());
-
-        playerRepository.saveAll(players);
         gameRepository.save(game);
 
-        return null;
+        return mapper.toResult(game, player);
     }
-     */
 }

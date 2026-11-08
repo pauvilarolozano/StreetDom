@@ -6,6 +6,5 @@ import java.util.UUID;
 
 public record CreateGameResponse(
         UUID gameId,
-        UUID gameMapId,
         GameState state
 ) {}

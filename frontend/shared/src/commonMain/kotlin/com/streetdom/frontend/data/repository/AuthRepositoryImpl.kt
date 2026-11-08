@@ -81,11 +81,10 @@ class AuthRepositoryImpl(
 
         } catch (e: ClientRequestException) {
             when (e.response.status) {
-                HttpStatusCode.Conflict ->
+                HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden, HttpStatusCode.Conflict ->
                     GetProfileResult.SessionExpired
 
                 else -> {
-                    e.printStackTrace()
                     GetProfileResult.UnknownError
                 }
             }

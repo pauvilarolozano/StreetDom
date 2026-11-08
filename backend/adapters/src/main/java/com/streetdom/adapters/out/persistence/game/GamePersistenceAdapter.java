@@ -4,6 +4,8 @@ import com.streetdom.adapters.out.persistence.game.jpa.GameJpaRepository;
 import com.streetdom.adapters.out.persistence.game.mapper.GameMapper;
 import com.streetdom.application.port.out.game.GameRepository;
 import com.streetdom.domain.model.game.Game;
+import com.streetdom.domain.model.game.GameState;
+import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +18,14 @@ public class GamePersistenceAdapter implements GameRepository {
 
     private final GameJpaRepository gameJpaRepository;
     private final GameMapper gameMapper;
+
+    @Override
+    public Optional<Game> findLatestByUserIdAndState(UUID userId, GameState state) {
+        return gameJpaRepository.findByUserIdAndState(userId, state, PageRequest.of(0, 1))
+                .stream()
+                .findFirst()
+                .map(gameMapper::toDomain);
+    }
 
     @Override
     public Optional<Game> findById(UUID id) {
@@ -32,8 +42,4 @@ public class GamePersistenceAdapter implements GameRepository {
         return gameJpaRepository.existsById(id);
     }
 
-    @Override
-    public boolean existsByGameMapId(UUID gameMapId) {
-        return gameJpaRepository.existsByGameMapId(gameMapId);
-    }
 }

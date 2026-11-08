@@ -1,6 +1,7 @@
 package com.streetdom.adapters.out.valhalla;
 
 import com.streetdom.adapters.out.valhalla.model.ValhallaEdgeData;
+import com.streetdom.adapters.out.valhalla.model.Coordinate;
 import com.streetdom.adapters.out.valhalla.mapper.ValhallaRoutingEdgeImportMapper;
 import com.streetdom.application.port.out.streetnetwork.loading.StreetNetworkDataSource;
 import com.streetdom.application.port.out.streetnetwork.loading.RoutingEdgeImportData;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -47,8 +50,17 @@ public class ValhallaStreetNetworkDataSource implements StreetNetworkDataSource 
             }
         }
 
+        Set<List<Coordinate>> importedGeometries = new HashSet<>();
         return uniqueEdges.values()
                 .stream()
+                .filter(edge -> {
+                    List<Coordinate> geometry = edge.coordinates();
+                    if (importedGeometries.contains(geometry) || importedGeometries.contains(geometry.reversed())) {
+                        return false;
+                    }
+                    importedGeometries.add(geometry);
+                    return true;
+                })
                 .map(routingEdgeImportMapper::toImportData)
                 .toList();
     }

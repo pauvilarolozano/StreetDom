@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public record StartGameResponse(
         UUID gameId,
-        UUID gameMapId,
         GameState state,
         Instant startedAt,
         PlayerResponse player

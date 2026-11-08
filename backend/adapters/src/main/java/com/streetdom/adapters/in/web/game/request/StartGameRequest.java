@@ -1,9 +1,9 @@
 package com.streetdom.adapters.in.web.game.request;
 
-import com.streetdom.adapters.in.web.common.GpsPositionRequest;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record StartGameRequest(
-        @NotNull @Valid GpsPositionRequest gpsPosition
+        @NotNull UUID gameId
 ) {}

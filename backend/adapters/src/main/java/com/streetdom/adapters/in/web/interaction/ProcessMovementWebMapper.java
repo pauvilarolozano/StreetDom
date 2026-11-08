@@ -3,7 +3,7 @@ package com.streetdom.adapters.in.web.interaction;
 import com.streetdom.adapters.in.web.common.GpsPositionRequest;
 import com.streetdom.application.interaction.ProcessMovementCommand;
 import com.streetdom.application.interaction.result.InteractionResult;
-import com.streetdom.domain.model.game.GameMapStreetSegment;
+import com.streetdom.domain.model.game.GameStreetSegment;
 import com.streetdom.domain.model.geography.GpsPosition;
 import com.streetdom.domain.model.geography.Location;
 import org.springframework.stereotype.Component;
@@ -22,9 +22,9 @@ public class ProcessMovementWebMapper {
         );
     }
 
-    private GameMapStreetSegmentResponse toResponse(GameMapStreetSegment segment) {
-        return new GameMapStreetSegmentResponse(
-                segment.getGameMapId(),
+    private GameStreetSegmentResponse toResponse(GameStreetSegment segment) {
+        return new GameStreetSegmentResponse(
+                segment.getGameId(),
                 segment.getStreetSegmentId(),
                 segment.getState()
         );

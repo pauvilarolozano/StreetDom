@@ -18,7 +18,7 @@ class HomeViewModel(
     private val locationUseCase: LocationUseCase
 
 ) : ViewModel() {
-    
+
     var uiState by mutableStateOf(HomeUiState())
         private set
 

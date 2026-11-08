@@ -34,6 +34,17 @@ public class StreetNetworkPersistenceAdapter implements StreetNetworkRepository 
     private static final double MINIMUM_OVERLAP = 0.8;
 
     @Override
+    public List<StreetSegment> findStreetSegmentsByIds(Set<UUID> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        return streetSegmentJpaRepository.findAllById(ids).stream()
+                .map(streetSegmentMapper::toDomain)
+                .toList();
+    }
+
+    @Override
     @Transactional
     public void save(List<RoutingEdge> routingEdges, List<StreetSegment> streetSegments) {
 

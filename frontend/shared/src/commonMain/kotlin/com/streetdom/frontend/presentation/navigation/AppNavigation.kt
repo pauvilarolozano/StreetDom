@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.streetdom.frontend.presentation.screens.gameMenu.GameMenuScreen
 import com.streetdom.frontend.presentation.screens.home.HomeScreen
 import com.streetdom.frontend.presentation.screens.login.LoginScreen
 import com.streetdom.frontend.presentation.screens.play.PlayScreen
@@ -71,7 +72,7 @@ fun AppNavigation() {
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToPlay = {
-                    navController.navigate(Screen.Play.route)
+                    navController.navigate(Screen.GameMenu.route)
                 },
                 onNavigateToRanking = {},
                 onNavigateToInventory = {},
@@ -82,6 +83,17 @@ fun AppNavigation() {
                             inclusive = true
                         }
                     }
+                }
+            )
+        }
+
+        composable(Screen.GameMenu.route) {
+            GameMenuScreen(
+                onBack = {
+                    navController.popBackStack()
+                },
+                onStartGame = {
+                    navController.navigate(Screen.Play.route)
                 }
             )
         }
