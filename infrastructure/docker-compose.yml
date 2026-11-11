@@ -27,8 +27,20 @@ services:
     ports:
       - "8002:8002"
     command: >
-      valhalla_service
-      /data/valhalla/valhalla.json
+      sh -c "
+        mkdir -p /data/valhalla/tiles;
+  
+        if [ -z \"$(ls -A /data/valhalla/tiles 2>/dev/null)\" ]; then
+          echo 'No Valhalla tiles found. Generating tiles...';
+          valhalla_build_tiles
+            -c /data/valhalla/valhalla.json
+            /data/valhalla/osm/barcelona.osm.pbf;
+        else
+          echo 'Valhalla tiles already exist. Skipping tile generation.';
+        fi;
+  
+        valhalla_service /data/valhalla/valhalla.json
+      "
 
   backend:
     build: ../backend
@@ -36,6 +48,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: on-failure:3
     ports:
       - "8080:8080"
     environment:
