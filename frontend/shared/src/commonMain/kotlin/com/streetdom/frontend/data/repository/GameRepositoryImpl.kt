@@ -8,7 +8,7 @@ import com.streetdom.frontend.data.request.GpsPositionRequest
 import com.streetdom.frontend.data.request.StartGameRequest
 import com.streetdom.frontend.data.response.ErrorResponse
 import com.streetdom.frontend.domain.model.CurrentGame
-import com.streetdom.frontend.domain.model.Location
+import com.streetdom.frontend.domain.model.GpsPosition
 import com.streetdom.frontend.domain.model.Player
 import com.streetdom.frontend.domain.model.PlayerRole
 import com.streetdom.frontend.domain.repository.GameRepository
@@ -33,14 +33,14 @@ class GameRepositoryImpl(
     private val _currentGame = MutableStateFlow<CurrentGame?>(null)
     override val currentGame: StateFlow<CurrentGame?> = _currentGame.asStateFlow()
 
-    override suspend fun createGame(location: Location): CreateGameResult {
+    override suspend fun createGame(gpsPosition: GpsPosition): CreateGameResult {
         return try {
             val request = CreateGameRequest(
                 gpsPosition = GpsPositionRequest(
-                    latitude = location.latitude,
-                    longitude = location.longitude,
-                    recordedAt = location.recordedAt ?: "",
-                    accuracyMeters = location.accuracyMeters ?: 0.0,
+                    latitude = gpsPosition.latitude,
+                    longitude = gpsPosition.longitude,
+                    recordedAt = gpsPosition.recordedAt ?: "",
+                    accuracyMeters = gpsPosition.accuracyMeters ?: 0.0,
                 ),
             )
 

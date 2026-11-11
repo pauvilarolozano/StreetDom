@@ -9,6 +9,7 @@ import com.streetdom.frontend.data.repository.AuthRepositoryImpl
 import com.streetdom.frontend.data.repository.GameRepositoryImpl
 import com.streetdom.frontend.data.storage.TokensStorageImpl
 import com.streetdom.frontend.data.storage.UserStorageImpl
+import com.streetdom.frontend.domain.manager.GpsTrackerManager
 import com.streetdom.frontend.domain.repository.AuthRepository
 import com.streetdom.frontend.domain.repository.GameRepository
 import com.streetdom.frontend.domain.session.AuthenticatedSessionInitializer
@@ -81,6 +82,10 @@ val commonModule = module {
         LocationUseCase(get())
     }
 
+    single {
+        GpsTrackerManager(get())
+    }
+
     factory <SplashViewModel> {
         SplashViewModel(get(), get())
     }
@@ -110,7 +115,7 @@ val commonModule = module {
     }
 
     factory <PlayViewModel> {
-        PlayViewModel(get(), get())
+        PlayViewModel(get(), get(), get())
     }
 
 }

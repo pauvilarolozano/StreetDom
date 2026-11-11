@@ -17,10 +17,10 @@ class GameUseCase(
     val currentGame = gameRepository.currentGame
 
     suspend fun createGame(): CreateGameResult {
-        val currentLocation = locationRepository.getCurrentLocation()
+        val currentGpsPosition = locationRepository.getCurrentLocation()
             ?: return CreateGameResult.NoLocationAvailable
 
-        val createResult = gameRepository.createGame(currentLocation)
+        val createResult = gameRepository.createGame(currentGpsPosition)
         if (createResult !is CreateGameResult.Success) return createResult
 
         val segmentsResult = gameRepository.loadGameSegments(createResult.game.gameId)

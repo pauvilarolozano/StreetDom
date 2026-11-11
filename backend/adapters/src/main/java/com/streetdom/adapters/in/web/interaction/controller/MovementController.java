@@ -1,5 +1,8 @@
-package com.streetdom.adapters.in.web.interaction;
+package com.streetdom.adapters.in.web.interaction.controller;
 
+import com.streetdom.adapters.in.web.interaction.mapper.ProcessMovementWebMapper;
+import com.streetdom.adapters.in.web.interaction.request.MovementUpdateRequest;
+import com.streetdom.adapters.in.web.interaction.response.MovementUpdateResponse;
 import com.streetdom.adapters.in.web.security.SecurityUser;
 import com.streetdom.application.interaction.ProcessMovementCommand;
 import com.streetdom.application.interaction.ProcessMovementUseCase;

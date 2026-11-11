@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.streetdom.frontend.domain.model.Location
+import com.streetdom.frontend.domain.manager.GpsTrackerManager
+import com.streetdom.frontend.domain.model.GpsPosition
 import com.streetdom.frontend.domain.result.GetCurrentGameResult
 import com.streetdom.frontend.domain.result.GetGameSegmentsResult
 import com.streetdom.frontend.domain.useCase.GameUseCase
@@ -18,18 +19,24 @@ import kotlinx.coroutines.launch
 class PlayViewModel(
     private val locationUseCase: LocationUseCase,
     private val gameUseCase: GameUseCase,
+    private val gpsTrackerManager: GpsTrackerManager,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(PlayUiState())
         private set
 
-    private val _location = MutableStateFlow<Location?>(null)
-    val location: StateFlow<Location?> = _location.asStateFlow()
+    private val _gpsPosition = MutableStateFlow<GpsPosition?>(null)
+    val gpsPosition: StateFlow<GpsPosition?> = _gpsPosition.asStateFlow()
 
     init {
         viewModelScope.launch {
             gameUseCase.currentGame.collect { game ->
                 uiState = uiState.copy(currentGame = game)
+            }
+        }
+        viewModelScope.launch {
+            gpsTrackerManager.isTracking.collect { isTracking ->
+                uiState = uiState.copy(isTrackingActive = isTracking)
             }
         }
         loadGameData()
@@ -39,8 +46,8 @@ class PlayViewModel(
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true, errorMessage = null)
 
-            val currentLoc = locationUseCase.getCurrentLocation()
-            _location.value = currentLoc
+            val currentGpsPosition = locationUseCase.getCurrentLocation()
+            _gpsPosition.value = currentGpsPosition
 
             var errorMessage: String? = null
             if (gameUseCase.getCurrentGame() == null) {
@@ -55,7 +62,7 @@ class PlayViewModel(
 
             uiState = uiState.copy(
                 isLoading = false,
-                currentLocation = currentLoc,
+                currentGpsPosition = currentGpsPosition,
                 currentGame = currentGame,
                 errorMessage = errorMessage,
             )
@@ -95,5 +102,10 @@ class PlayViewModel(
                 }
             }
         }
+    }
+
+    fun onToggleTracking() {
+        if (uiState.currentGame == null) return
+        gpsTrackerManager.toggleTracking()
     }
 }

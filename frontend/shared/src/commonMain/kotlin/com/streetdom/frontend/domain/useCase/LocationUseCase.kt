@@ -1,6 +1,6 @@
 package com.streetdom.frontend.domain.useCase
 
-import com.streetdom.frontend.domain.model.Location
+import com.streetdom.frontend.domain.model.GpsPosition
 import com.streetdom.frontend.domain.repository.LocationRepository
 
 class LocationUseCase(
@@ -11,7 +11,7 @@ class LocationUseCase(
         return locationRepository.isLocationEnabled()
     }
 
-    suspend fun getCurrentLocation(): Location? {
+    suspend fun getCurrentLocation(): GpsPosition? {
         return locationRepository.getCurrentLocation()
     }
 }

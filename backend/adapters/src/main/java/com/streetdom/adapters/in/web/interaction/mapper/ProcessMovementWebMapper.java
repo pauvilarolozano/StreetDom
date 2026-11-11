@@ -1,6 +1,9 @@
-package com.streetdom.adapters.in.web.interaction;
+package com.streetdom.adapters.in.web.interaction.mapper;
 
 import com.streetdom.adapters.in.web.common.GpsPositionRequest;
+import com.streetdom.adapters.in.web.interaction.response.GameStreetSegmentResponse;
+import com.streetdom.adapters.in.web.interaction.request.MovementUpdateRequest;
+import com.streetdom.adapters.in.web.interaction.response.MovementUpdateResponse;
 import com.streetdom.application.interaction.ProcessMovementCommand;
 import com.streetdom.application.interaction.result.InteractionResult;
 import com.streetdom.domain.model.game.GameStreetSegment;

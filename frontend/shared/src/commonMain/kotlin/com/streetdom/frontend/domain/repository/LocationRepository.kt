@@ -1,9 +1,9 @@
 package com.streetdom.frontend.domain.repository
 
-import com.streetdom.frontend.domain.model.Location
+import com.streetdom.frontend.domain.model.GpsPosition
 
 interface LocationRepository {
 
     fun isLocationEnabled(): Boolean
-    suspend fun getCurrentLocation(): Location?
+    suspend fun getCurrentLocation(): GpsPosition?
 }

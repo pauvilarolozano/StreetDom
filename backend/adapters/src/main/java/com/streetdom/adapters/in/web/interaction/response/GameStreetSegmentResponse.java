@@ -1,4 +1,4 @@
-package com.streetdom.adapters.in.web.interaction;
+package com.streetdom.adapters.in.web.interaction.response;
 
 import com.streetdom.domain.model.game.StreetSegmentState;
 

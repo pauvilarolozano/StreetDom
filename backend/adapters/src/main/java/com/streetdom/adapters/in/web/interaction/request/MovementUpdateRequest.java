@@ -1,4 +1,4 @@
-package com.streetdom.adapters.in.web.interaction;
+package com.streetdom.adapters.in.web.interaction.request;
 
 import com.streetdom.adapters.in.web.common.GpsPositionRequest;
 import jakarta.validation.Valid;

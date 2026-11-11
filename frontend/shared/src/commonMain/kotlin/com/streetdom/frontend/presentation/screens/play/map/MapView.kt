@@ -6,8 +6,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.streetdom.frontend.domain.model.GpsPosition
 import com.streetdom.frontend.domain.model.StreetSegment
-import com.streetdom.frontend.domain.model.Location
 import com.streetdom.frontend.domain.model.StreetSegmentState
 import kotlinx.serialization.json.JsonObject
 import org.maplibre.compose.camera.CameraPosition
@@ -26,14 +26,14 @@ import org.maplibre.spatialk.geojson.dsl.buildFeatureCollection
 @Composable
 fun MapView(
     modifier: Modifier = Modifier,
-    location: Location?,
+    gpsPosition: GpsPosition?,
     segments: List<StreetSegment>,
     mapConfig: MapConfig
 ) {
     val cameraState = rememberCameraState()
 
-    LaunchedEffect(location) {
-        location?.let {
+    LaunchedEffect(gpsPosition) {
+        gpsPosition?.let {
             cameraState.animateTo(
                 CameraPosition(
                     target = Position(

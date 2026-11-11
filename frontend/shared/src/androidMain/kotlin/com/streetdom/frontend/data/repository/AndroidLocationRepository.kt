@@ -5,7 +5,7 @@ import android.content.Context
 import android.location.LocationManager
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.streetdom.frontend.domain.model.Location
+import com.streetdom.frontend.domain.model.GpsPosition
 import com.streetdom.frontend.domain.repository.LocationRepository
 import kotlinx.coroutines.tasks.await
 
@@ -25,7 +25,7 @@ class AndroidLocationRepository(
     }
 
     @SuppressLint("MissingPermission")
-    override suspend fun getCurrentLocation(): Location? {
+    override suspend fun getCurrentLocation(): GpsPosition? {
         return try {
             fusedLocationClient.getCurrentLocation(
                 Priority.PRIORITY_HIGH_ACCURACY,
@@ -38,7 +38,7 @@ class AndroidLocationRepository(
                     timeZone = java.util.TimeZone.getTimeZone("UTC")
                 }.format(java.util.Date(it.time))
 
-                Location(
+                GpsPosition(
                     latitude = it.latitude,
                     longitude = it.longitude,
                     recordedAt = isoDate,
