@@ -6,6 +6,6 @@ import java.util.UUID;
 
 public class PlayerAlreadyInActiveGameException extends DomainException {
     public PlayerAlreadyInActiveGameException(UUID userId, UUID gameId) {
-        super("User " + userId + " already participates in game " + gameId + " in progress");
+        super("User " + userId + " already participates in game " + gameId + " in CREATED or IN_PROGRESS state");
     }
 }

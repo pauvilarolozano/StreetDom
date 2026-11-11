@@ -1,5 +1,6 @@
 package com.streetdom.application.game;
 
+import com.streetdom.application.game.result.FinishGameResult;
 import com.streetdom.application.game.result.PlayerResult;
 import com.streetdom.application.game.result.StartGameResult;
 import com.streetdom.application.game.result.CurrentGameResult;
@@ -30,6 +31,10 @@ public class GameServiceMapper {
                 game.getStartedAt(),
                 toResult(player)
         );
+    }
+
+    public FinishGameResult toFinishGameResult(Game game) {
+        return new FinishGameResult(game.getId(), game.getState(), game.getFinishedAt());
     }
 
     public PlayerResult toResult(Player player) {

@@ -11,6 +11,7 @@ object ApiConfig {
     const val CURRENT_GAME_URL = "/api/games/current"
     const val CREATE_GAME_URL = "/api/games"
     const val START_GAME_URL = "/api/games/start"
+    const val FINISH_GAME_URL = "/api/games/finish"
 
     fun getGameSegmentsUrl(gameId: String): String = "/api/games/$gameId/segments"
 

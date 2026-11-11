@@ -3,6 +3,10 @@ package com.streetdom.adapters.in.web.game.mapper;
 import com.streetdom.adapters.in.web.common.GpsPositionRequest;
 import com.streetdom.adapters.in.web.game.request.CreateGameRequest;
 import com.streetdom.adapters.in.web.game.request.StartGameRequest;
+import com.streetdom.adapters.in.web.game.request.FinishGameRequest;
+import com.streetdom.adapters.in.web.game.response.FinishGameResponse;
+import com.streetdom.application.game.command.FinishGameCommand;
+import com.streetdom.application.game.result.FinishGameResult;
 import com.streetdom.adapters.in.web.game.response.StartGameResponse;
 import com.streetdom.adapters.in.web.game.response.GameSegmentsResponse;
 import com.streetdom.adapters.in.web.game.response.GameSegmentResponse;
@@ -61,6 +65,14 @@ public class GameWebMapper {
                 result.startedAt(),
                 playerWebMapper.toResponse(result.player())
         );
+    }
+
+    public FinishGameResponse toResponse(FinishGameResult result) {
+        return new FinishGameResponse(result.gameId(), result.state(), result.finishedAt());
+    }
+
+    public FinishGameCommand toCommand(FinishGameRequest request, UUID userId) {
+        return new FinishGameCommand(userId, request.gameId());
     }
 
     public StartGameCommand toCommand(StartGameRequest request, UUID userId) {

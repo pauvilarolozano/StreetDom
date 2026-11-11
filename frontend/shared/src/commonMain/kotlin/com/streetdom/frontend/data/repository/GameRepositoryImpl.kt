@@ -3,17 +3,21 @@ package com.streetdom.frontend.data.repository
 import com.streetdom.frontend.data.mapper.toDomain
 import com.streetdom.frontend.data.remote.GameApi
 import com.streetdom.frontend.data.request.CreateGameRequest
+import com.streetdom.frontend.data.request.FinishGameRequest
 import com.streetdom.frontend.data.request.GpsPositionRequest
 import com.streetdom.frontend.data.request.StartGameRequest
+import com.streetdom.frontend.data.response.ErrorResponse
 import com.streetdom.frontend.domain.model.CurrentGame
 import com.streetdom.frontend.domain.model.Location
 import com.streetdom.frontend.domain.model.Player
 import com.streetdom.frontend.domain.model.PlayerRole
 import com.streetdom.frontend.domain.repository.GameRepository
 import com.streetdom.frontend.domain.result.CreateGameResult
+import com.streetdom.frontend.domain.result.FinishGameResult
 import com.streetdom.frontend.domain.result.GetCurrentGameResult
 import com.streetdom.frontend.domain.result.GetGameSegmentsResult
 import com.streetdom.frontend.domain.result.StartGameResult
+import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import kotlinx.coroutines.CancellationException
@@ -94,6 +98,41 @@ class GameRepositoryImpl(
             StartGameResult.ServerError
         } catch (_: Exception) {
             StartGameResult.NetworkError
+        }
+    }
+
+    override suspend fun finishGame(gameId: String): FinishGameResult {
+        return try {
+            val request = FinishGameRequest(gameId = gameId)
+            val response = gameApi.finishGame(request)
+
+            clearCurrentGame()
+
+            FinishGameResult.Success(response)
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (e: ClientRequestException) {
+            try {
+                val errorBody = e.response.body<ErrorResponse>()
+                when (errorBody.code) {
+                    "GAME_CANNOT_BE_FINISHED" -> FinishGameResult.GameCannotBeFinished(
+                        errorBody.message ?: "Only a game in CREATED or IN_PROGRESS state can be finished",
+                    )
+                    "PLAYER_NOT_FOUND" -> FinishGameResult.PlayerNotFound(
+                        errorBody.message ?: "The player was not found in the requested game",
+                    )
+                    "GAME_NOT_FOUND" -> FinishGameResult.GameNotFound(
+                        errorBody.message ?: "The requested game was not found",
+                    )
+                    else -> FinishGameResult.ServerError
+                }
+            } catch (_: Exception) {
+                FinishGameResult.ServerError
+            }
+        } catch (_: ServerResponseException) {
+            FinishGameResult.ServerError
+        } catch (_: Exception) {
+            FinishGameResult.NetworkError
         }
     }
 

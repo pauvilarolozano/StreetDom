@@ -21,6 +21,7 @@ fun GameMenuScreen(
         uiState = uiState,
         onBack = onBack,
         onCreateGame = viewModel::onCreateGameClick,
+        onDeleteGame = viewModel::onDeleteGameClick,
         onStartGame = {
             viewModel.onStartGameClick(onStartGame)
         },
@@ -33,6 +34,7 @@ private fun GameMenuContent(
     uiState: GameMenuUiState,
     onBack: () -> Unit,
     onCreateGame: () -> Unit,
+    onDeleteGame: () -> Unit,
     onStartGame: () -> Unit,
 ) {
     Scaffold(
@@ -104,18 +106,40 @@ private fun GameMenuContent(
                         )
                     }
 
-                    Button(
-                        onClick = onCreateGame,
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !uiState.isCreatingGame,
-                    ) {
-                        if (uiState.isCreatingGame) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                strokeWidth = 2.dp,
-                            )
-                        } else {
-                            Text(if (uiState.hasCurrentGame) "Regenerar Partida y Mapa" else "Crear Partida y Mapa")
+                    if (uiState.hasCurrentGame) {
+                        Button(
+                            onClick = onDeleteGame,
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = !uiState.isCreatingGame,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError,
+                            ),
+                        ) {
+                            if (uiState.isCreatingGame) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.onError,
+                                )
+                            } else {
+                                Text("Acabar Partida")
+                            }
+                        }
+                    } else {
+                        Button(
+                            onClick = onCreateGame,
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = !uiState.isCreatingGame,
+                        ) {
+                            if (uiState.isCreatingGame) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                )
+                            } else {
+                                Text("Crear Partida y Mapa")
+                            }
                         }
                     }
                 }

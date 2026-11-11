@@ -2,6 +2,8 @@ package com.streetdom.application.game;
 
 import com.streetdom.application.game.command.CreateGameCommand;
 import com.streetdom.application.game.command.StartGameCommand;
+import com.streetdom.application.game.command.FinishGameCommand;
+import com.streetdom.application.game.result.FinishGameResult;
 import com.streetdom.application.game.result.CreateGameResult;
 import com.streetdom.application.game.result.StartGameResult;
 import com.streetdom.application.game.usecases.GameUseCase;
@@ -65,6 +67,7 @@ public class GameService implements GameUseCase {
     public CreateGameResult createGame(CreateGameCommand command) {
 
         playerRepository.findGameIdByUserIdAndGameState(command.userId(), GameState.IN_PROGRESS)
+                .or(() -> playerRepository.findGameIdByUserIdAndGameState(command.userId(), GameState.CREATED))
                 .ifPresent(gameId -> {
                     throw new PlayerAlreadyInActiveGameException(command.userId(), gameId);
                 });
@@ -121,5 +124,21 @@ public class GameService implements GameUseCase {
         gameRepository.save(game);
 
         return mapper.toResult(game, player);
+    }
+
+    @Override
+    @Transactional
+    public FinishGameResult finishGame(FinishGameCommand command) {
+        UUID gameId = command.gameId();
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new GameNotFoundException(gameId));
+
+        playerRepository.findPlayerById(command.userId(), gameId)
+                .orElseThrow(() -> new PlayerNotFoundException(command.userId(), gameId));
+
+        game.finish(clock.instant());
+        gameRepository.save(game);
+
+        return mapper.toFinishGameResult(game);
     }
 }

@@ -4,6 +4,7 @@ import com.streetdom.frontend.domain.model.CurrentGame
 import com.streetdom.frontend.domain.repository.GameRepository
 import com.streetdom.frontend.domain.repository.LocationRepository
 import com.streetdom.frontend.domain.result.CreateGameResult
+import com.streetdom.frontend.domain.result.FinishGameResult
 import com.streetdom.frontend.domain.result.GetCurrentGameResult
 import com.streetdom.frontend.domain.result.GetGameSegmentsResult
 import com.streetdom.frontend.domain.result.StartGameResult
@@ -40,6 +41,13 @@ class GameUseCase(
         }
 
         return gameRepository.startGame(activeGame.gameId)
+    }
+
+    suspend fun finishGame(): FinishGameResult {
+        val activeGame = gameRepository.getCurrentGame()
+            ?: return FinishGameResult.NoGameIdAvailable
+
+        return gameRepository.finishGame(activeGame.gameId)
     }
 
     suspend fun loadCurrentGame(): GetCurrentGameResult = gameRepository.loadCurrentGame()

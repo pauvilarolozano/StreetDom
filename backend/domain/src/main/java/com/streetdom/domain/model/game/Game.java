@@ -1,5 +1,6 @@
 package com.streetdom.domain.model.game;
 
+import com.streetdom.domain.exception.game.GameCannotBeFinishedException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -58,8 +59,8 @@ public class Game {
 
         Objects.requireNonNull(now);
 
-        if (state != GameState.IN_PROGRESS) {
-            throw new IllegalStateException("Only games in progress can be finished");
+        if (state != GameState.CREATED && state != GameState.IN_PROGRESS) {
+            throw new GameCannotBeFinishedException(id);
         }
 
         state = GameState.FINISHED;
@@ -80,8 +81,8 @@ public class Game {
             throw new IllegalArgumentException("Game in progress must have a start date and no finish date");
         }
 
-        if (state == GameState.FINISHED && (startedAt == null || finishedAt == null)) {
-            throw new IllegalArgumentException("Finished game must have start and finish dates");
+        if (state == GameState.FINISHED && finishedAt == null) {
+            throw new IllegalArgumentException("Finished game must have a finish date");
         }
     }
 

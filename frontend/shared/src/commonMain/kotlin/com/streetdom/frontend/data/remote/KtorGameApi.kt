@@ -2,9 +2,11 @@ package com.streetdom.frontend.data.remote
 
 import com.streetdom.frontend.data.config.ApiConfig
 import com.streetdom.frontend.data.request.CreateGameRequest
+import com.streetdom.frontend.data.request.FinishGameRequest
 import com.streetdom.frontend.data.request.StartGameRequest
 import com.streetdom.frontend.data.response.CreateGameResponse
 import com.streetdom.frontend.data.response.CurrentGameResponse
+import com.streetdom.frontend.data.response.FinishGameResponse
 import com.streetdom.frontend.data.response.GameSegmentsResponse
 import com.streetdom.frontend.data.response.StartGameResponse
 import io.ktor.client.HttpClient
@@ -32,6 +34,13 @@ class KtorGameApi(
 
     override suspend fun startGame(request: StartGameRequest): StartGameResponse {
         val response = authenticatedClient.post(ApiConfig.START_GAME_URL) {
+            setBody(request)
+        }
+        return response.body()
+    }
+
+    override suspend fun finishGame(request: FinishGameRequest): FinishGameResponse {
+        val response = authenticatedClient.post(ApiConfig.FINISH_GAME_URL) {
             setBody(request)
         }
         return response.body()

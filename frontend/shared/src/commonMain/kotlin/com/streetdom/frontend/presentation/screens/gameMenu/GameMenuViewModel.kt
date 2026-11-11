@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streetdom.frontend.domain.result.CreateGameResult
+import com.streetdom.frontend.domain.result.FinishGameResult
 import com.streetdom.frontend.domain.result.GetCurrentGameResult
 import com.streetdom.frontend.domain.result.StartGameResult
 import com.streetdom.frontend.domain.useCase.GameUseCase
@@ -76,6 +77,58 @@ class GameMenuViewModel(
                     uiState = uiState.copy(
                         isCreatingGame = false,
                         errorMessage = "Server error while creating game.",
+                    )
+                }
+            }
+        }
+    }
+
+    fun onDeleteGameClick() {
+        uiState = uiState.copy(isCreatingGame = true, errorMessage = null)
+
+        viewModelScope.launch {
+            when (val result = gameUseCase.finishGame()) {
+                is FinishGameResult.Success -> {
+                    uiState = uiState.copy(
+                        isCreatingGame = false,
+                        hasCurrentGame = false,
+                        currentGameId = null,
+                    )
+                }
+                is FinishGameResult.NoGameIdAvailable -> {
+                    uiState = uiState.copy(
+                        isCreatingGame = false,
+                        errorMessage = "No active game to delete.",
+                    )
+                }
+                is FinishGameResult.GameCannotBeFinished -> {
+                    uiState = uiState.copy(
+                        isCreatingGame = false,
+                        errorMessage = result.message,
+                    )
+                }
+                is FinishGameResult.PlayerNotFound -> {
+                    uiState = uiState.copy(
+                        isCreatingGame = false,
+                        errorMessage = result.message,
+                    )
+                }
+                is FinishGameResult.GameNotFound -> {
+                    uiState = uiState.copy(
+                        isCreatingGame = false,
+                        errorMessage = result.message,
+                    )
+                }
+                is FinishGameResult.NetworkError -> {
+                    uiState = uiState.copy(
+                        isCreatingGame = false,
+                        errorMessage = "Network error deleting game.",
+                    )
+                }
+                is FinishGameResult.ServerError -> {
+                    uiState = uiState.copy(
+                        isCreatingGame = false,
+                        errorMessage = "Server error deleting game.",
                     )
                 }
             }

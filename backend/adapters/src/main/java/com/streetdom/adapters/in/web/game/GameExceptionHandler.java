@@ -2,6 +2,7 @@ package com.streetdom.adapters.in.web.game;
 
 import com.streetdom.adapters.in.web.common.ErrorResponse;
 import com.streetdom.domain.exception.game.EmptyGameAreaException;
+import com.streetdom.domain.exception.game.GameCannotBeFinishedException;
 import com.streetdom.domain.exception.game.GameNotFoundException;
 import com.streetdom.domain.exception.game.GameNotInCreatedStateException;
 import com.streetdom.domain.exception.game.GameNotInProgressException;
@@ -17,6 +18,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GameExceptionHandler {
+
+    @ExceptionHandler(GameCannotBeFinishedException.class)
+    public ResponseEntity<ErrorResponse> handleGameCannotBeFinished(GameCannotBeFinishedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(
+                        "GAME_CANNOT_BE_FINISHED",
+                        "Only a game in CREATED or IN_PROGRESS state can be finished"
+                ));
+    }
 
     @ExceptionHandler(GameNotInCreatedStateException.class)
     public ResponseEntity<ErrorResponse> handleGameNotCreated(GameNotInCreatedStateException ex) {
@@ -44,7 +55,7 @@ public class GameExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(
                         "PLAYER_ALREADY_IN_ACTIVE_GAME",
-                        "The user already participates in a game in progress"
+                        "The user already participates in a game in CREATED or IN_PROGRESS state"
                 ));
     }
 

@@ -3,6 +3,10 @@ package com.streetdom.adapters.in.web.game.controller;
 import com.streetdom.adapters.in.web.game.mapper.GameWebMapper;
 import com.streetdom.adapters.in.web.game.request.CreateGameRequest;
 import com.streetdom.adapters.in.web.game.request.StartGameRequest;
+import com.streetdom.adapters.in.web.game.request.FinishGameRequest;
+import com.streetdom.adapters.in.web.game.response.FinishGameResponse;
+import com.streetdom.application.game.command.FinishGameCommand;
+import com.streetdom.application.game.result.FinishGameResult;
 import com.streetdom.adapters.in.web.game.response.CreateGameResponse;
 import com.streetdom.adapters.in.web.game.response.StartGameResponse;
 import com.streetdom.adapters.in.web.game.response.GameSegmentsResponse;
@@ -82,6 +86,16 @@ public class GameController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+    }
+
+    @PostMapping("/finish")
+    public ResponseEntity<FinishGameResponse> finishGame(
+            @Valid @RequestBody FinishGameRequest request,
+            @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        FinishGameCommand command = mapper.toCommand(request, securityUser.getId());
+        FinishGameResult result = gameUseCase.finishGame(command);
+        return ResponseEntity.ok(mapper.toResponse(result));
     }
 
 }

@@ -2,6 +2,8 @@ package com.streetdom.application.game.usecases;
 
 import com.streetdom.application.game.command.CreateGameCommand;
 import com.streetdom.application.game.command.StartGameCommand;
+import com.streetdom.application.game.command.FinishGameCommand;
+import com.streetdom.application.game.result.FinishGameResult;
 import com.streetdom.application.game.result.CreateGameResult;
 import com.streetdom.application.game.result.StartGameResult;
 import com.streetdom.application.game.query.GetCurrentGameQuery;
@@ -14,4 +16,5 @@ public interface GameUseCase {
 
     CreateGameResult createGame(CreateGameCommand command);
     StartGameResult startGame(StartGameCommand command);
+    FinishGameResult finishGame(FinishGameCommand command);
 }
